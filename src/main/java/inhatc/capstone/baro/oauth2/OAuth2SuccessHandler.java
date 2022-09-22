@@ -51,7 +51,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 			.queryParam("accessToken", token.getAccessToken())
 			.queryParam("refreshToken", token.getRefreshToken())
 			.queryParam("isFirst", firstMember)
-			.build().toUriString();
+			.toUriString();
+
 		response.sendRedirect(redirectUri);
 	}
 
