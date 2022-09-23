@@ -25,6 +25,9 @@ public class Member {
 	private String nickname;
 	private String userProfileImage;
 	private boolean isFirst;
+	private String skill;
+	private String university;
+	private String introduce;
 
 	@Enumerated(EnumType.STRING)
 	private OAuth2Provider provider;
