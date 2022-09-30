@@ -11,9 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -21,7 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import inhatc.capstone.baro.jwt.TokenDto;
 import inhatc.capstone.baro.jwt.TokenProvider;
-import inhatc.capstone.baro.member.Member;
+import inhatc.capstone.baro.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

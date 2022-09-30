@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 
-import inhatc.capstone.baro.member.Member;
+import inhatc.capstone.baro.member.domain.Member;
 import lombok.Getter;
 
 /**

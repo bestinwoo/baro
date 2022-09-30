@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import inhatc.capstone.baro.member.domain.Member;
 import inhatc.capstone.baro.oauth2.OAuth2Provider;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {

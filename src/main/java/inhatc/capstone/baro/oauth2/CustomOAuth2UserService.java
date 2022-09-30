@@ -11,7 +11,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import inhatc.capstone.baro.member.Member;
+import inhatc.capstone.baro.member.domain.Member;
 import inhatc.capstone.baro.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
