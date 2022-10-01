@@ -42,7 +42,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 		log.info("Principal에서 꺼낸 OAuth2User = {}", oAuth2User);
 		log.info("토큰 발행 시작");
 
-		TokenDto token = tokenProvider.generateTokenDto(createUserPayload(loggedMember));
+		TokenDto.Response token = tokenProvider.generateTokenDto(createUserPayload(loggedMember));
 		log.info("{}", token);
 		String redirectUri = UriComponentsBuilder.fromUriString(redirectUrl)
 			.queryParam("accessToken", token.getAccessToken())

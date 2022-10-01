@@ -11,7 +11,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ErrorCode {
 	// 400 BAD_REQUEST
-	INVALID_ID(BAD_REQUEST, "유효하지 않은 ID"),
+	INVALID_ID(BAD_REQUEST, "유효하지 않은 ID입니다."),
+	INVALID_REFRESH_TOKEN(BAD_REQUEST, "유효하지 않은 Refresh Token입니다."),
 	// 401 UNAUTHORIZED
 	INVALID_TOKEN(UNAUTHORIZED, "유효하지 않은 토큰입니다.");
 

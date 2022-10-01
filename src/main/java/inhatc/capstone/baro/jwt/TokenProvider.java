@@ -5,9 +5,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -33,13 +35,15 @@ public class TokenProvider {
 	private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30;            // 30분
 	private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;  // 7일
 	private final Key key;
+	private final RedisTemplate<String, Object> redisTemplate;
 
-	public TokenProvider(@Value("${jwt.secret}") String secretKey) {
+	public TokenProvider(@Value("${jwt.secret}") String secretKey, RedisTemplate<String, Object> redisTemplate) {
 		byte[] keyBytes = Decoders.BASE64.decode(secretKey);
 		this.key = Keys.hmacShaKeyFor(keyBytes);
+		this.redisTemplate = redisTemplate;
 	}
 
-	public TokenDto generateTokenDto(Map<String, Object> claims) {
+	public TokenDto.Response generateTokenDto(Map<String, Object> claims) {
 		long now = (new Date()).getTime();
 
 		//Access Token 생성
@@ -56,8 +60,11 @@ public class TokenProvider {
 			.setExpiration(refreshTokenExpiresIn)
 			.signWith(key)
 			.compact();
-
-		return TokenDto.builder()
+		redisTemplate.opsForValue()
+			.set("RefreshToken:" + claims.get("sub"), refreshToken,
+				refreshTokenExpiresIn.getTime() - new Date().getTime(),
+				TimeUnit.MILLISECONDS);
+		return TokenDto.Response.builder()
 			.grantType(BEARER_TYPE)
 			.accessToken(accessToken)
 			.accessTokenExpiresIn(expiresIn.getTime())
@@ -102,7 +109,7 @@ public class TokenProvider {
 		return false;
 	}
 
-	private Claims parseClaims(String accessToken) {
+	public Claims parseClaims(String accessToken) {
 		try {
 			return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken)
 				.getBody();
