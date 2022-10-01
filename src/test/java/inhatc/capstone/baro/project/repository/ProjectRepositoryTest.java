@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import inhatc.capstone.baro.member.MemberRepository;
 import inhatc.capstone.baro.member.domain.Member;
@@ -28,37 +29,39 @@ class ProjectRepositoryTest {
 	MemberRepository memberRepository;
 
 	public void createProject() {
-		Member member = Member.builder()
-			.email("Test@gmail.com")
-			.isFirst(false)
-			.oauth2Id("0124495")
-			.nickname("Test")
-			.university("인하공업전문대학")
-			.build();
+		for(int i = 0; i < 2; i++) {
+			Member member = Member.builder()
+				.email("Test@gmail.com")
+				.isFirst(false)
+				.oauth2Id("0124495"+i)
+				.nickname("Test")
+				.university("인하공업전문대학")
+				.build();
 
-		memberRepository.save(member);
+			memberRepository.save(member);
 
-		Project project = Project.builder()
-			.likeCount(0L)
-			.title("Test")
-			.viewCount(0L)
-			.leader(member)
-			.build();
+			Project project = Project.builder()
+				.likeCount(0L)
+				.title("Test"+i)
+				.viewCount(0L)
+				.leader(member)
+				.build();
 
-		ProjectDetail detail = ProjectDetail.builder()
-				.content("Test Content")
-					.purpose("사이드 프로젝트")
-						.build();
+			ProjectDetail detail = ProjectDetail.builder()
+				.content("Test Content"+i)
+				.purpose("사이드 프로젝트")
+				.build();
+			detail.setProject(project);
 
-		projectDetailRepository.save(detail);
-		project.setDetail(detail);
-		projectRepository.save(project);
+			project.setDetail(detail);
+			projectRepository.save(project);
+		}
 
 	}
 
 	@Test
-	@DisplayName("Lazy 확인")
-	public void checkFetchLazy() {
+	@DisplayName("프로젝트 MapsId 확인")
+	public void checkMapsId() {
 		createProject();
 		List<Project> all = projectRepository.findAll();
 		Project project = all.get(0);

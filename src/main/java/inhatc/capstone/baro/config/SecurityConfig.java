@@ -9,8 +9,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
-import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -63,7 +61,7 @@ public class SecurityConfig {
 			.authorizeRequests()
 			.antMatchers(HttpMethod.OPTIONS).permitAll()
 			.antMatchers("/token/**").permitAll()
-		//	.antMatchers("/member/**").permitAll()
+			//	.antMatchers("/member/**").permitAll()
 			.anyRequest().authenticated()
 
 			.and()
@@ -76,8 +74,6 @@ public class SecurityConfig {
 
 		http.addFilterBefore(new JwtAuthFilter(tokenProvider),
 			UsernamePasswordAuthenticationFilter.class);
-
-
 
 		return http.build();
 	}

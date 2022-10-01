@@ -1,6 +1,5 @@
 package inhatc.capstone.baro.jwt;
 
-
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,7 +20,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -34,7 +32,6 @@ public class TokenProvider {
 	private static final String BEARER_TYPE = "bearer";
 	private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30;            // 30분
 	private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;  // 7일
-
 	private final Key key;
 
 	public TokenProvider(@Value("${jwt.secret}") String secretKey) {

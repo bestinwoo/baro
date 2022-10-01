@@ -1,5 +1,6 @@
 package inhatc.capstone.baro.project.domain;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -32,8 +33,8 @@ public class Project {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "leader_id")
 	private Member leader;
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "detail_id")
+
+	@OneToOne(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private ProjectDetail detail;
 
 	public void setDetail(ProjectDetail detail) {
