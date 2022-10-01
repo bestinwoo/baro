@@ -15,8 +15,6 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import inhatc.capstone.baro.jwt.TokenDto;
 import inhatc.capstone.baro.jwt.TokenProvider;
 import inhatc.capstone.baro.member.domain.Member;
@@ -28,11 +26,12 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 	private final TokenProvider tokenProvider;
-	private final ObjectMapper objectMapper;
 	@Value("${app.oauth2.authorized-redirect-uri}")
 	private String redirectUrl;
+
 	@Override
-	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
+	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+		Authentication authentication)
 		throws IOException, ServletException {
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -58,6 +57,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 		Map<String, Object> payload = new HashMap<>();
 		payload.put("sub", member.getId());
 		payload.put("email", member.getEmail());
+		if (member.getNickname() != null) {
+			payload.put("nickname", member.getNickname());
+		}
 		payload.put("role", "ROLE_USER");
 		return payload;
 	}

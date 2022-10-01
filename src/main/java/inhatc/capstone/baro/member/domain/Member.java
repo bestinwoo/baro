@@ -10,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import inhatc.capstone.baro.job.Job;
+import inhatc.capstone.baro.member.dto.MemberDto;
 import inhatc.capstone.baro.oauth2.OAuth2Provider;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -38,6 +40,7 @@ public class Member {
 	private String university;
 	private String introduce;
 	private Long point;
+	private String jobLevel;
 
 	@Enumerated(EnumType.STRING)
 	private OAuth2Provider provider;
@@ -47,10 +50,20 @@ public class Member {
 		member.oauth2Id = oauth2Id;
 		member.email = email;
 		member.provider = provider;
-		member.nickname = "anonymous";
 		member.point = 0L;
 		member.isFirst = true;
 		return member;
+	}
+
+	public Member registerMember(MemberDto.Register dto) {
+		this.nickname = dto.getNickname();
+		this.job = Job.builder()
+			.id(dto.getJobId())
+			.build();
+		this.jobLevel = dto.getJobLevel();
+		this.university = dto.getUniversity();
+		this.isFirst = false;
+		return this;
 	}
 
 }

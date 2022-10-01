@@ -8,6 +8,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -31,6 +32,11 @@ public class SecurityConfig {
 	private final TokenProvider tokenProvider;
 	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
+	@Bean
+	public WebSecurityCustomizer webSecurity() {
+		return (web) -> web.ignoring().antMatchers("/resources/**", "/images/**", "/swagger-ui/**", "/v3/api-docs/**");
+	}
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
