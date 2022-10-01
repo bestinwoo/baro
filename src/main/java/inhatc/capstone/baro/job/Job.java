@@ -1,4 +1,4 @@
-package inhatc.capstone.baro.member.domain;
+package inhatc.capstone.baro.job;
 
 import java.util.List;
 
@@ -12,11 +12,15 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 @Getter
 public class Job {
 	@Id
@@ -28,7 +32,7 @@ public class Job {
 	private Job parent;
 
 	@OneToMany(mappedBy = "parent")
-	private List<Job> child;
+	private List<Job> children;
 
 	private Long depth;
 }
