@@ -14,6 +14,8 @@ public enum ErrorCode {
 	INVALID_ID(BAD_REQUEST, "유효하지 않은 ID입니다."),
 	INVALID_REFRESH_TOKEN(BAD_REQUEST, "유효하지 않은 Refresh Token입니다."),
 	INVALID_INPUT_VALUE(BAD_REQUEST, "입력 양식과 맞지않는 입력값입니다."),
+	EXIST_MEMBER(BAD_REQUEST, "이미 가입된 유저입니다."),
+	INVALID_IMAGE_EXTENSION(BAD_REQUEST, "이미지는 png 또는 jpg 확장자만 업로드 할 수 있습니다."),
 
 	// 401 UNAUTHORIZED
 	INVALID_TOKEN(UNAUTHORIZED, "유효하지 않은 토큰입니다.");
