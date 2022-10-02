@@ -19,5 +19,6 @@ public class MemberService {
 	public void join(MemberDto.Register register) {
 		Member member = memberRepository.findById(register.getId()).orElseThrow(() -> new CustomException(INVALID_ID));
 		member.registerMember(register);
+		
 	}
 }

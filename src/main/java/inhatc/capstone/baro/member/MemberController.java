@@ -2,6 +2,7 @@ package inhatc.capstone.baro.member;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +31,7 @@ public class MemberController {
 		@ApiResponse(responseCode = "400", description = "해당 ID에 해당하는 멤버 정보 없음", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
 	@PostMapping("/signup")
-	public ResponseEntity<?> signup(@RequestBody MemberDto.Register register) {
+	public ResponseEntity<?> signup(@Validated @RequestBody MemberDto.Register register) {
 		memberService.join(register);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
