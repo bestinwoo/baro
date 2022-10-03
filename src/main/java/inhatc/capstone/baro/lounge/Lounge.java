@@ -9,11 +9,15 @@ import javax.persistence.ManyToOne;
 
 import inhatc.capstone.baro.member.domain.Member;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
+@AllArgsConstructor
 @Getter
 public class Lounge {
 	@Id

@@ -16,9 +16,13 @@ public enum ErrorCode {
 	INVALID_INPUT_VALUE(BAD_REQUEST, "입력 양식과 맞지않는 입력값입니다."),
 	EXIST_MEMBER(BAD_REQUEST, "이미 가입된 유저입니다."),
 	INVALID_IMAGE_EXTENSION(BAD_REQUEST, "이미지는 png 또는 jpg 확장자만 업로드 할 수 있습니다."),
+	NOT_FOUND_IMAGE(BAD_REQUEST, "이미지를 찾을 수 없습니다."),
 
 	// 401 UNAUTHORIZED
-	INVALID_TOKEN(UNAUTHORIZED, "유효하지 않은 토큰입니다.");
+	INVALID_TOKEN(UNAUTHORIZED, "유효하지 않은 토큰입니다."),
+
+	//403 FORBIDDEN
+	NOT_JOINED(FORBIDDEN, "가입하지 않은 회원입니다.");
 
 	private final HttpStatus httpStatus;
 	private final String detail;

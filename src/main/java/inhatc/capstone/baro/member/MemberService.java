@@ -18,7 +18,9 @@ public class MemberService {
 	@Transactional(rollbackFor = Exception.class)
 	public void join(MemberDto.Register register) {
 		Member member = memberRepository.findById(register.getId()).orElseThrow(() -> new CustomException(INVALID_ID));
+		if (!member.isFirst()) { // 이미 가입된 유저일경우 exception throw
+			throw new CustomException(EXIST_MEMBER);
+		}
 		member.registerMember(register);
-		
 	}
 }
