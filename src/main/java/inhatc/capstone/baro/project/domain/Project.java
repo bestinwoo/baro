@@ -1,5 +1,6 @@
 package inhatc.capstone.baro.project.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,7 @@ import javax.persistence.OneToOne;
 import inhatc.capstone.baro.image.Image;
 import inhatc.capstone.baro.member.domain.Member;
 import inhatc.capstone.baro.project.dto.ProjectDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,6 +50,8 @@ public class Project {
 
 	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<ProjectSkill> skill;
+	@Schema(name = "프로젝트 상태", description = "R = 모집중, C = 진행중, E = 완료")
+	private String state;
 
 	public void setSkill(List<ProjectSkill> skill) {
 		this.skill = skill;
@@ -74,6 +78,7 @@ public class Project {
 			.title(create.getTitle())
 			.viewCount(0L)
 			.likeCount(0L)
+			.state("R")
 			.leader(Member.builder().id(create.getLeaderId()).build())
 			.image(Image.builder().imagePath(create.getThumbnailLink()).build())
 			.build();
@@ -89,11 +94,13 @@ public class Project {
 
 		project.setSkill(skills);
 
-		List<ProjectTeam> team = create.getRecruitJobs()
-			.stream()
-			.map(ProjectTeam::createTeam)
-			.map(m -> m.setProject(project))
-			.collect(Collectors.toList());
+		List<ProjectTeam> team = new ArrayList<>();
+		for (int i = 0; i < create.getRecruitJobs().size(); i++) {
+			ProjectDto.RecruitJob recruitJob = create.getRecruitJobs().get(i);
+			for (int j = 0; j < recruitJob.getRecruitCount(); j++) {
+				team.add(ProjectTeam.createTeam(recruitJob));
+			}
+		}
 		project.setTeam(team);
 
 		return project;

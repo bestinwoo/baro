@@ -8,6 +8,7 @@ import javax.validation.constraints.NotNull;
 
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,7 +17,7 @@ public class ProjectDto {
 	@Setter
 	public static class Create {
 		@NotBlank(message = "프로젝트명을 입력해주세요.")
-		@Schema(description = "프로젝트명", defaultValue = "인하옥션")
+		@Schema(description = "프로젝트명", defaultValue = "인하옥션", required = true)
 		private String title;
 
 		@NotBlank(message = "프로젝트 목적을 입력해주세요.")
@@ -61,8 +62,39 @@ public class ProjectDto {
 	@Getter
 	@Setter
 	public static class RecruitJob {
+		@Schema(name = "직무 ID", required = true)
 		private Long jobId;
+		@Schema(name = "모집 인원", required = true)
 		private Long recruitCount;
+		@Schema(name = "모집 완료 인원", description = "프로젝트 생성 시에는 보낼 필요 없음")
+		private Long completeCount;
+	}
+
+	@Getter
+	@Setter
+	@Builder
+	public static class Summary {
+		private Long id;
+		private String title;
+		private String leaderNickname;
+		private List<RecruitJob> jobs;
+
+		// public static Summary from(Project project) {
+		// 	return Summary.builder()
+		// 		.id(project.getId())
+		// 		.title(project.getTitle())
+		// 		.leaderNickname(project.getLeader().getNickname())
+		// 		.jobs(project.getTeam())
+		// }
+	}
+
+	@Getter
+	@Setter
+	public static class Request {
+		private String school;
+		private String purpose;
+		private Long jobId;
+		private String state;
 	}
 
 }
