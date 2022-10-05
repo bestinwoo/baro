@@ -1,15 +1,23 @@
 package inhatc.capstone.baro.project.dto;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
+import inhatc.capstone.baro.project.domain.Project;
+import inhatc.capstone.baro.project.domain.ProjectTeam;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 public class ProjectDto {
@@ -61,12 +69,16 @@ public class ProjectDto {
 
 	@Getter
 	@Setter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@Builder
 	public static class RecruitJob {
-		@Schema(name = "직무 ID", required = true)
+		@Schema(description = "직무 ID", required = true)
 		private Long jobId;
-		@Schema(name = "모집 인원", required = true)
-		private Long recruitCount;
-		@Schema(name = "모집 완료 인원", description = "프로젝트 생성 시에는 보낼 필요 없음")
+		@Schema(description = "모집 인원", required = true)
+		@Size(min = 1, max = 9, message = "모집 인원은 최소 1명, 최대 9명입니다.")
+		private int recruitCount;
+		@Schema(description = "모집 완료 인원, 프로젝트 생성 시에는 보낼 필요 없음")
 		private Long completeCount;
 	}
 
@@ -79,17 +91,36 @@ public class ProjectDto {
 		private String leaderNickname;
 		private List<RecruitJob> jobs;
 
-		// public static Summary from(Project project) {
-		// 	return Summary.builder()
-		// 		.id(project.getId())
-		// 		.title(project.getTitle())
-		// 		.leaderNickname(project.getLeader().getNickname())
-		// 		.jobs(project.getTeam())
-		// }
+		public static Summary from(Project project) {
+			Summary summary = Summary.builder()
+				.id(project.getId())
+				.title(project.getTitle())
+				.leaderNickname(project.getLeader().getNickname())
+				.build();
+
+			List<RecruitJob> jobList = new ArrayList<>();
+			Map<Long, List<ProjectTeam>> collect = project.getTeam()
+				.stream()
+				.collect(Collectors.groupingBy(t -> t.getJob().getId()));
+
+			for (Map.Entry<Long, List<ProjectTeam>> entry : collect.entrySet()) {
+				List<ProjectTeam> team = entry.getValue();
+				RecruitJob job = RecruitJob.builder()
+					.jobId(entry.getKey())
+					.recruitCount(team.size())
+					.completeCount(team.stream().filter(t -> t.getMember() != null).count())
+					.build();
+				jobList.add(job);
+			}
+			summary.setJobs(jobList);
+
+			return summary;
+		}
 	}
 
 	@Getter
 	@Setter
+	@Builder
 	public static class Request {
 		private String school;
 		private String purpose;

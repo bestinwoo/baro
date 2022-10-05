@@ -13,15 +13,6 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 @Configuration
 @OpenAPIDefinition(info = @Info(title = "Baro API", version = "1.0", description = "바로 API 명세서"))
 public class SwaggerConfig {
-	@Bean
-	public GroupedOpenApi securityGroupOpenApi() {
-		return GroupedOpenApi
-			.builder()
-			.group("Security Open Api")
-			.pathsToExclude("/token/*")
-			.addOpenApiCustomiser(buildSecurityOpenApi())
-			.build();
-	}
 
 	@Bean
 	public GroupedOpenApi NonSecurityGroupOpenApi() {
@@ -29,6 +20,16 @@ public class SwaggerConfig {
 			.builder()
 			.group("Non Security Open Api")
 			.pathsToMatch("/token/*")
+			.build();
+	}
+
+	@Bean
+	public GroupedOpenApi securityGroupOpenApi() {
+		return GroupedOpenApi
+			.builder()
+			.group("Security Open Api")
+			.pathsToExclude("/token/*")
+			.addOpenApiCustomiser(buildSecurityOpenApi())
 			.build();
 	}
 

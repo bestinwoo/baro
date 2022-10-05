@@ -98,7 +98,7 @@ public class Project {
 		for (int i = 0; i < create.getRecruitJobs().size(); i++) {
 			ProjectDto.RecruitJob recruitJob = create.getRecruitJobs().get(i);
 			for (int j = 0; j < recruitJob.getRecruitCount(); j++) {
-				team.add(ProjectTeam.createTeam(recruitJob));
+				team.add(ProjectTeam.createTeam(recruitJob).setProject(project));
 			}
 		}
 		project.setTeam(team);
