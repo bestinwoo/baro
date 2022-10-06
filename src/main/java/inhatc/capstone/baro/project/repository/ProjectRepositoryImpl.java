@@ -3,16 +3,17 @@ package inhatc.capstone.baro.project.repository;
 import static inhatc.capstone.baro.project.domain.QProject.*;
 import static inhatc.capstone.baro.project.domain.QProjectTeam.*;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import inhatc.capstone.baro.member.domain.QMember;
@@ -27,7 +28,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
 	@Override
 	public Page<Project> findByCondition(ProjectDto.Request request, Pageable pageable) {
-		QueryResults<Project> fetch = queryFactory.select(project)
+		List<Project> fetch = queryFactory.select(project)
 			.from(project)
 			.distinct()
 			.innerJoin(project.leader, QMember.member)
@@ -39,9 +40,22 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 			.where(eqState(request.getState()))
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
-			.fetchResults();
+			.fetch();
 
-		return new PageImpl<>(fetch.getResults(), pageable, fetch.getTotal());
+		JPAQuery<Project> countQuery = queryFactory
+			.select(project)
+			.from(project)
+			.distinct()
+			.innerJoin(project.leader, QMember.member)
+			.leftJoin(project.team, projectTeam)
+			.where(projectTeam.project.id.eq(project.id))
+			.where(likeSchool(request.getSchool()))
+			.where(eqPurpose(request.getPurpose()))
+			.where(eqJob(request.getJobId()))
+			.where(eqState(request.getState()));
+
+		return PageableExecutionUtils.getPage(fetch, pageable, () -> countQuery.fetch().size());
+		//return new PageImpl<>(fetch.getResults(), pageable, fetch.getTotal());
 	}
 
 	private BooleanExpression likeSchool(String school) {
