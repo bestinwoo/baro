@@ -3,7 +3,6 @@ package inhatc.capstone.baro.project.repository;
 import static inhatc.capstone.baro.project.domain.QProject.*;
 import static inhatc.capstone.baro.project.domain.QProjectTeam.*;
 
-import java.util.List;
 import java.util.Objects;
 
 import org.springframework.data.domain.Page;
@@ -12,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -27,7 +27,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
 	@Override
 	public Page<Project> findByCondition(ProjectDto.Request request, Pageable pageable) {
-		List<Project> fetch = queryFactory.select(project)
+		QueryResults<Project> fetch = queryFactory.select(project)
 			.from(project)
 			.distinct()
 			.innerJoin(project.leader, QMember.member)
@@ -39,9 +39,9 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 			.where(eqState(request.getState()))
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
-			.fetch();
+			.fetchResults();
 
-		return new PageImpl<>(fetch, pageable, fetch.size());
+		return new PageImpl<>(fetch.getResults(), pageable, fetch.getTotal());
 	}
 
 	private BooleanExpression likeSchool(String school) {

@@ -87,15 +87,24 @@ public class ProjectDto {
 	@Builder
 	public static class Summary {
 		private Long id;
+		@Schema(description = "프로젝트명")
 		private String title;
+		@Schema(description = "리더 닉네임")
 		private String leaderNickname;
+		@Schema(description = "프로젝트 상태 \n R = 모집중\nC = 진행중\nE = 완료")
+		private String state;
 		private List<RecruitJob> jobs;
+		private Long likeCount;
+		private Long viewCount;
 
 		public static Summary from(Project project) {
 			Summary summary = Summary.builder()
 				.id(project.getId())
 				.title(project.getTitle())
+				.state(project.getState())
 				.leaderNickname(project.getLeader().getNickname())
+				.likeCount(project.getLikeCount())
+				.viewCount(project.getViewCount())
 				.build();
 
 			List<RecruitJob> jobList = new ArrayList<>();

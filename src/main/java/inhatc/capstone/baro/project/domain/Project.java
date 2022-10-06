@@ -1,5 +1,6 @@
 package inhatc.capstone.baro.project.domain;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,7 +19,6 @@ import javax.persistence.OneToOne;
 import inhatc.capstone.baro.image.Image;
 import inhatc.capstone.baro.member.domain.Member;
 import inhatc.capstone.baro.project.dto.ProjectDto;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -50,8 +50,8 @@ public class Project {
 
 	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<ProjectSkill> skill;
-	@Schema(name = "프로젝트 상태", description = "R = 모집중, C = 진행중, E = 완료")
 	private String state;
+	private LocalDateTime createDate;
 
 	public void setSkill(List<ProjectSkill> skill) {
 		this.skill = skill;
@@ -78,6 +78,7 @@ public class Project {
 			.title(create.getTitle())
 			.viewCount(0L)
 			.likeCount(0L)
+			.createDate(LocalDateTime.now())
 			.state("R")
 			.leader(Member.builder().id(create.getLeaderId()).build())
 			.image(Image.builder().imagePath(create.getThumbnailLink()).build())

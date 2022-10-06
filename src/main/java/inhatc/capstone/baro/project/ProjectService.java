@@ -2,7 +2,10 @@ package inhatc.capstone.baro.project;
 
 import static inhatc.capstone.baro.exception.ErrorCode.*;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +14,8 @@ import inhatc.capstone.baro.exception.CustomException;
 import inhatc.capstone.baro.image.ImageRepository;
 import inhatc.capstone.baro.project.domain.Project;
 import inhatc.capstone.baro.project.dto.ProjectDto;
+import inhatc.capstone.baro.project.dto.ProjectDto.Request;
+import inhatc.capstone.baro.project.dto.ProjectDto.Summary;
 import inhatc.capstone.baro.project.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -37,10 +42,16 @@ public class ProjectService {
 
 	//프로젝트 목록 조회
 	@Transactional(readOnly = true)
-	public Page<ProjectDto.Summary> getProjectList(Pageable pageable, ProjectDto.Request request) {
-		return projectRepository.findByCondition(request, pageable).map(ProjectDto.Summary::from);
+	public Page<Summary> getProjectList(Pageable pageable, Request request) {
+		return projectRepository.findByCondition(request, pageable).map(Summary::from);
 	}
-	//최근 프로젝트 조회 (메인페이지)
+
+	//최근 프로젝트 조회
+	@Transactional(readOnly = true)
+	public List<Summary> getRecentProject(int size) {
+		return projectRepository.findAllByOrderByCreateDateDesc(PageRequest.of(0, size)).map(Summary::from)
+			.getContent();
+	}
 
 	//프로젝트 수정
 
