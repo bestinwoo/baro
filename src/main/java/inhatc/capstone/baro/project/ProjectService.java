@@ -3,6 +3,7 @@ package inhatc.capstone.baro.project;
 import static inhatc.capstone.baro.exception.ErrorCode.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -51,6 +52,15 @@ public class ProjectService {
 	public List<Summary> getRecentProject(int size) {
 		return projectRepository.findAllByOrderByCreateDateDesc(PageRequest.of(0, size)).map(Summary::from)
 			.getContent();
+	}
+
+	//주목할만한 프로젝트 조회
+	@Transactional
+	public List<Summary> getPopularProject() {
+		return projectRepository.findTop3ByOrderByViewCountDesc()
+			.stream()
+			.map(Summary::from)
+			.collect(Collectors.toList());
 	}
 
 	//프로젝트 수정

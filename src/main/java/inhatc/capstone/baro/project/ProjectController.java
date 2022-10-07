@@ -56,6 +56,12 @@ public class ProjectController {
 	}
 
 	//주목할만한 프로젝트
+	@Operation(summary = "주목할만한 프로젝트 조회")
+	@GetMapping("/popular")
+	public ResponseEntity<List<ProjectDto.Summary>> getRecentProjects() {
+		List<ProjectDto.Summary> popularProject = projectService.getPopularProject();
+		return ResponseEntity.ok(popularProject);
+	}
 }
 
 
