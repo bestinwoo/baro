@@ -33,11 +33,13 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 			.distinct()
 			.innerJoin(project.leader, QMember.member)
 			.leftJoin(project.team, projectTeam)
-			.where(projectTeam.project.id.eq(project.id))
-			.where(likeSchool(request.getSchool()))
-			.where(eqPurpose(request.getPurpose()))
-			.where(eqJob(request.getJobId()))
-			.where(eqState(request.getState()))
+			.where(
+				projectTeam.project.id.eq(project.id),
+				likeSchool(request.getSchool()),
+				eqPurpose(request.getPurpose()),
+				eqJob(request.getJobId()),
+				eqState(request.getState())
+			)
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();
@@ -48,11 +50,13 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 			.distinct()
 			.innerJoin(project.leader, QMember.member)
 			.leftJoin(project.team, projectTeam)
-			.where(projectTeam.project.id.eq(project.id))
-			.where(likeSchool(request.getSchool()))
-			.where(eqPurpose(request.getPurpose()))
-			.where(eqJob(request.getJobId()))
-			.where(eqState(request.getState()));
+			.where(
+				projectTeam.project.id.eq(project.id),
+				likeSchool(request.getSchool()),
+				eqPurpose(request.getPurpose()),
+				eqJob(request.getJobId()),
+				eqState(request.getState())
+			);
 
 		return PageableExecutionUtils.getPage(fetch, pageable, () -> countQuery.fetch().size());
 		//return new PageImpl<>(fetch.getResults(), pageable, fetch.getTotal());
@@ -64,7 +68,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 		}
 		return project.leader.university.like("%" + school + "%");
 	}
-
+	//TODO: purpose를 detail말고 project에 넣으면 detail 조인 안해도될듯??
 	private BooleanExpression eqPurpose(String purpose) {
 		if (!StringUtils.hasText(purpose)) {
 			return null;

@@ -65,6 +65,10 @@ public class ProjectDto {
 		@Schema(description = "리더 ID")
 		@NotNull(message = "프로젝트 리더 ID를 입력해주세요.")
 		private Long leaderId;
+
+		@Schema(description = "리더 담당 직무 ID")
+		@NotNull(message = "프로젝드 리더의 담당 직무를 선택해주세요.")
+		private Long leaderJobId;
 	}
 
 	@Getter
@@ -108,17 +112,32 @@ public class ProjectDto {
 				.build();
 
 			List<RecruitJob> jobList = new ArrayList<>();
+			//모집 분야별로 grouping
 			Map<Long, List<ProjectTeam>> collect = project.getTeam()
 				.stream()
 				.collect(Collectors.groupingBy(t -> t.getJob().getId()));
 
 			for (Map.Entry<Long, List<ProjectTeam>> entry : collect.entrySet()) {
 				List<ProjectTeam> team = entry.getValue();
+
+				//리더는 모집 인원에서 제외하도록 filter 처리
+				team = team.stream().filter(t -> {
+					if (t.getMember() != null) {
+						return !t.getMember().getId().equals(project.getLeader().getId());
+					} else {
+						return true;
+					}
+				}).collect(Collectors.toList());
+				if (team.size() < 1) {
+					continue;
+				}
+
 				RecruitJob job = RecruitJob.builder()
 					.jobId(entry.getKey())
 					.recruitCount(team.size())
 					.completeCount(team.stream().filter(t -> t.getMember() != null).count())
 					.build();
+
 				jobList.add(job);
 			}
 			summary.setJobs(jobList);

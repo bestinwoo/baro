@@ -9,7 +9,6 @@ import javax.persistence.ManyToOne;
 
 import inhatc.capstone.baro.job.Job;
 import inhatc.capstone.baro.member.domain.Member;
-import inhatc.capstone.baro.project.dto.ProjectDto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,8 +42,22 @@ public class ProjectTeam {
 	@JoinColumn(name = "skill_id")
 	private Job job;
 
-	public static ProjectTeam createTeam(ProjectDto.RecruitJob job) {
+	public static ProjectTeam createTeam(Long jobId) {
 		return ProjectTeam.builder()
-			.job(Job.builder().id(job.getJobId()).build()).build();
+			.job(Job
+				.builder()
+				.id(jobId)
+				.build())
+			.build();
+	}
+
+	public static ProjectTeam createTeam(Long jobId, Member member) {
+		return ProjectTeam.builder()
+			.job(Job
+				.builder()
+				.id(jobId)
+				.build())
+			.member(member)
+			.build();
 	}
 }

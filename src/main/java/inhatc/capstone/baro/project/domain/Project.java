@@ -96,10 +96,13 @@ public class Project {
 		project.setSkill(skills);
 
 		List<ProjectTeam> team = new ArrayList<>();
+
+		team.add(ProjectTeam.createTeam(create.getLeaderJobId(), project.leader).setProject(project));
+
 		for (int i = 0; i < create.getRecruitJobs().size(); i++) {
 			ProjectDto.RecruitJob recruitJob = create.getRecruitJobs().get(i);
 			for (int j = 0; j < recruitJob.getRecruitCount(); j++) {
-				team.add(ProjectTeam.createTeam(recruitJob).setProject(project));
+				team.add(ProjectTeam.createTeam(recruitJob.getJobId()).setProject(project));
 			}
 		}
 		project.setTeam(team);
