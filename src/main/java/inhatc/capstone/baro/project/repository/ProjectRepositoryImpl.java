@@ -68,12 +68,13 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 		}
 		return project.leader.university.like("%" + school + "%");
 	}
+
 	//TODO: purpose를 detail말고 project에 넣으면 detail 조인 안해도될듯??
 	private BooleanExpression eqPurpose(String purpose) {
 		if (!StringUtils.hasText(purpose)) {
 			return null;
 		}
-		return project.detail.purpose.eq(purpose);
+		return project.purpose.eq(purpose);
 	}
 
 	private BooleanExpression eqJob(Long jobId) {

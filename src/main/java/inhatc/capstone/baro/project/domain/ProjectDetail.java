@@ -30,7 +30,6 @@ public class ProjectDetail {
 	private String content;
 	private LocalDate startDate;
 	private LocalDate endDate;
-	private String purpose; // 프로젝트 목적
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "lounge_id")
@@ -51,7 +50,6 @@ public class ProjectDetail {
 
 	public static ProjectDetail from(ProjectDto.Create create) {
 		ProjectDetail detail = ProjectDetail.builder()
-			.purpose(create.getPurpose())
 			.startDate(create.getStartDate())
 			.endDate(create.getEndDate())
 			.content(create.getDescription())

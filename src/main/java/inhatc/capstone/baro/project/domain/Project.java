@@ -35,18 +35,16 @@ public class Project {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	private String purpose; // 프로젝트 목적
 	private String title;
 	private Long viewCount;
 	private Long likeCount;
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "leader_id")
 	private Member leader;
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "image_path")
 	private Image image;
-
-	@OneToOne(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private ProjectDetail detail;
 
 	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<ProjectSkill> skill;
@@ -64,10 +62,6 @@ public class Project {
 	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<ProjectTeam> team;
 
-	public void setDetail(ProjectDetail detail) {
-		this.detail = detail;
-	}
-
 	/**
 	 * 새 프로젝트 생성
 	 * @param create
@@ -78,16 +72,17 @@ public class Project {
 			.title(create.getTitle())
 			.viewCount(0L)
 			.likeCount(0L)
+			.purpose(create.getPurpose())
 			.createDate(LocalDateTime.now())
 			.state("R")
 			.leader(Member.builder().id(create.getLeaderId()).build())
 			.image(Image.builder().imagePath(create.getThumbnailLink()).build())
 			.build();
 
-		ProjectDetail detail = ProjectDetail.from(create);
-
-		detail.setProject(project);
-		project.setDetail(detail);
+		// ProjectDetail detail = ProjectDetail.from(create);
+		//
+		// detail.setProject(project);
+		// project.setDetail(detail);
 
 		List<ProjectSkill> skills = create.getSkillIds().stream().map(m ->
 			ProjectSkill.builder().name(m).project(project).build()

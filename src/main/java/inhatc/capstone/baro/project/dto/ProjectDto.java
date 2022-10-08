@@ -41,7 +41,7 @@ public class ProjectDto {
 		List<RecruitJob> recruitJobs;
 
 		@NotNull(message = "프로젝트 기술 스택을 입력해주세요.")
-		@Schema(description = "프로젝트 기술 스택 ID List")
+		@Schema(description = "프로젝트 기술 스택List")
 		List<String> skillIds;
 
 		@NotBlank(message = "프로젝트 설명을 입력해주세요.")
@@ -100,6 +100,9 @@ public class ProjectDto {
 		private List<RecruitJob> jobs;
 		private Long likeCount;
 		private Long viewCount;
+		@Schema(description = "프로젝트 목적", defaultValue = "사이드 프로젝트")
+		private String purpose;
+		private String imagePath;
 
 		public static Summary from(Project project) {
 			Summary summary = Summary.builder()
@@ -109,6 +112,8 @@ public class ProjectDto {
 				.leaderNickname(project.getLeader().getNickname())
 				.likeCount(project.getLikeCount())
 				.viewCount(project.getViewCount())
+				.purpose(project.getPurpose())
+				.imagePath(project.getImage().getImagePath())
 				.build();
 
 			List<RecruitJob> jobList = new ArrayList<>();
@@ -144,6 +149,39 @@ public class ProjectDto {
 
 			return summary;
 		}
+	}
+
+	@Getter
+	@Setter
+	@Builder
+	public static class Detail {
+		private Long id;
+		@Schema(description = "프로젝트명")
+		private String title;
+		@Schema(description = "리더 닉네임")
+		private String leaderNickname;
+		@Schema(description = "프로젝트 상태 \n R = 모집중\nC = 진행중\nE = 완료")
+		private String state;
+		private List<RecruitJob> jobs;
+		private Long likeCount;
+		private Long viewCount;
+		@Schema(description = "프로젝트 목적", defaultValue = "사이드 프로젝트")
+		private String purpose;
+		private String imagePath;
+
+	}
+
+	@Getter
+	@Setter
+	@Builder
+	public static class TeamMember {
+		private Long memberId;
+		private String nickname;
+		private String userProfileImage;
+		private String profileJobName;
+		private String projectJobName;
+		private String school;
+
 	}
 
 	@Getter

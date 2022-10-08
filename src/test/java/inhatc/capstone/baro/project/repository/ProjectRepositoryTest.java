@@ -19,6 +19,8 @@ class ProjectRepositoryTest {
 	@Autowired
 	ProjectRepository projectRepository;
 	@Autowired
+	ProjectDetailRepository projectDetailRepository;
+	@Autowired
 	MemberRepository memberRepository;
 
 	public void createProject() {
@@ -42,11 +44,10 @@ class ProjectRepositoryTest {
 
 			ProjectDetail detail = ProjectDetail.builder()
 				.content("Test Content" + i)
-				.purpose("사이드 프로젝트")
 				.build();
 			detail.setProject(project);
-
-			project.setDetail(detail);
+			projectDetailRepository.save(detail);
+			//project.setDetail(detail);
 			projectRepository.save(project);
 		}
 
@@ -59,7 +60,7 @@ class ProjectRepositoryTest {
 		List<Project> all = projectRepository.findAll();
 		Project project = all.get(0);
 		System.out.println("project title = " + project.getTitle());
-		System.out.println("project content = " + project.getDetail().getContent());
+		//	System.out.println("project content = " + project.getDetail().getContent());
 		System.out.println("project member email = " + project.getLeader().getEmail());
 	}
 
