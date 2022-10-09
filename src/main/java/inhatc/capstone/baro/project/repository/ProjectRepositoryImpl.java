@@ -33,6 +33,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 			.distinct()
 			.innerJoin(project.leader, QMember.member)
 			.leftJoin(project.team, projectTeam)
+			.fetchJoin()
 			.where(
 				projectTeam.project.id.eq(project.id),
 				likeSchool(request.getSchool()),
@@ -69,7 +70,6 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 		return project.leader.university.like("%" + school + "%");
 	}
 
-	//TODO: purpose를 detail말고 project에 넣으면 detail 조인 안해도될듯??
 	private BooleanExpression eqPurpose(String purpose) {
 		if (!StringUtils.hasText(purpose)) {
 			return null;
