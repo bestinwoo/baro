@@ -22,7 +22,10 @@ public enum ErrorCode {
 	INVALID_TOKEN(UNAUTHORIZED, "유효하지 않은 토큰입니다."),
 
 	//403 FORBIDDEN
-	NOT_JOINED(FORBIDDEN, "가입하지 않은 회원입니다.");
+	NOT_JOINED(FORBIDDEN, "가입하지 않은 회원입니다."),
+
+	//404 NOT_FOUND
+	NOT_FOUND_PROJECT(NOT_FOUND, "프로젝트를 찾을 수 없습니다.");
 
 	private final HttpStatus httpStatus;
 	private final String detail;

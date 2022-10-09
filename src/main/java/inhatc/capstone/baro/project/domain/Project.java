@@ -62,6 +62,9 @@ public class Project {
 	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<ProjectTeam> team;
 
+	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+	private List<ProjectApplicant> applicants;
+
 	/**
 	 * 새 프로젝트 생성
 	 * @param create
@@ -80,7 +83,6 @@ public class Project {
 			.build();
 
 		// ProjectDetail detail = ProjectDetail.from(create);
-		//
 		// detail.setProject(project);
 		// project.setDetail(detail);
 

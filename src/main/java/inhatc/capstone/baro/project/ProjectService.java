@@ -14,9 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 import inhatc.capstone.baro.exception.CustomException;
 import inhatc.capstone.baro.image.ImageRepository;
 import inhatc.capstone.baro.project.domain.Project;
+import inhatc.capstone.baro.project.domain.ProjectDetail;
 import inhatc.capstone.baro.project.dto.ProjectDto;
 import inhatc.capstone.baro.project.dto.ProjectDto.Request;
 import inhatc.capstone.baro.project.dto.ProjectDto.Summary;
+import inhatc.capstone.baro.project.repository.ProjectDetailRepository;
 import inhatc.capstone.baro.project.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 @Transactional(rollbackFor = Exception.class)
 public class ProjectService {
 	private final ProjectRepository projectRepository;
+	private final ProjectDetailRepository projectDetailRepository;
 	private final ImageRepository imageRepository;
 
 	//프로젝트 생성
@@ -37,8 +40,11 @@ public class ProjectService {
 		if (project.getLeader().isFirst()) { // 가입하지 않은 회원 프로젝트 생성 불가
 			throw new CustomException(NOT_JOINED);
 		}
+		Project save = projectRepository.save(project);
 
-		projectRepository.save(project);
+		ProjectDetail detail = ProjectDetail.from(request);
+		detail.setProject(save);
+		projectDetailRepository.save(detail);
 	}
 
 	//프로젝트 목록 조회
@@ -55,7 +61,7 @@ public class ProjectService {
 	}
 
 	//주목할만한 프로젝트 조회
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<Summary> getPopularProject() {
 		return projectRepository.findTop3ByOrderByViewCountDesc()
 			.stream()
@@ -63,6 +69,13 @@ public class ProjectService {
 			.collect(Collectors.toList());
 	}
 
+	//프로젝트 상세 조회
+	@Transactional(readOnly = true)
+	public ProjectDto.Detail getProjectDetail(Long id) {
+		return projectDetailRepository.findById(id)
+			.map(ProjectDto.Detail::from)
+			.orElseThrow(() -> new CustomException(NOT_FOUND_PROJECT));
+	}
 	//프로젝트 수정
 
 	//프로젝트 삭제

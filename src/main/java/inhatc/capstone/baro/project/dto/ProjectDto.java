@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
@@ -11,6 +12,9 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import inhatc.capstone.baro.project.domain.Project;
+import inhatc.capstone.baro.project.domain.ProjectApplicant;
+import inhatc.capstone.baro.project.domain.ProjectDetail;
+import inhatc.capstone.baro.project.domain.ProjectSkill;
 import inhatc.capstone.baro.project.domain.ProjectTeam;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -84,6 +88,8 @@ public class ProjectDto {
 		private int recruitCount;
 		@Schema(description = "모집 완료 인원, 프로젝트 생성 시에는 보낼 필요 없음")
 		private Long completeCount;
+		@Schema(description = "직무 이름 Response용(전송 X)")
+		private String jobName;
 	}
 
 	@Getter
@@ -95,6 +101,8 @@ public class ProjectDto {
 		private String title;
 		@Schema(description = "리더 닉네임")
 		private String leaderNickname;
+		@Schema(description = "리더 ID")
+		private Long leaderId;
 		@Schema(description = "프로젝트 상태 \n R = 모집중\nC = 진행중\nE = 완료")
 		private String state;
 		private List<RecruitJob> jobs;
@@ -109,6 +117,7 @@ public class ProjectDto {
 				.id(project.getId())
 				.title(project.getTitle())
 				.state(project.getState())
+				.leaderId(project.getLeader().getId())
 				.leaderNickname(project.getLeader().getNickname())
 				.likeCount(project.getLikeCount())
 				.viewCount(project.getViewCount())
@@ -141,6 +150,7 @@ public class ProjectDto {
 					.jobId(entry.getKey())
 					.recruitCount(team.size())
 					.completeCount(team.stream().filter(t -> t.getMember() != null).count())
+					.jobName(team.get(0).getJob().getName())
 					.build();
 
 				jobList.add(job);
@@ -155,20 +165,49 @@ public class ProjectDto {
 	@Setter
 	@Builder
 	public static class Detail {
-		private Long id;
-		@Schema(description = "프로젝트명")
-		private String title;
-		@Schema(description = "리더 닉네임")
-		private String leaderNickname;
-		@Schema(description = "프로젝트 상태 \n R = 모집중\nC = 진행중\nE = 완료")
-		private String state;
-		private List<RecruitJob> jobs;
-		private Long likeCount;
-		private Long viewCount;
-		@Schema(description = "프로젝트 목적", defaultValue = "사이드 프로젝트")
-		private String purpose;
-		private String imagePath;
+		// private Long id;
+		// @Schema(description = "프로젝트명")
+		// private String title;
+		// @Schema(description = "리더 닉네임")
+		// private String leaderNickname;
+		// @Schema(description = "프로젝트 상태 \n R = 모집중\nC = 진행중\nE = 완료")
+		// private String state;
+		// private List<RecruitJob> jobs; // 모집 현황
+		// private Long likeCount;
+		// private Long viewCount;
+		// @Schema(description = "프로젝트 목적", defaultValue = "사이드 프로젝트")
+		// private String purpose;
+		private Summary summary;
+		private Set<String> skill;
+		private String description;
+		private LocalDate startDate;
+		private LocalDate endDate;
+		private Long loungeId;
+		private List<TeamMember> team;
+		private List<TeamMember> applicants;
 
+		public static Detail from(ProjectDetail detail) {
+			Detail detailDto = Detail.builder()
+				.summary(Summary.from(detail.getProject()))
+				.skill(detail.getProject().getSkill().stream().map(ProjectSkill::getName).collect(Collectors.toSet()))
+				.description(detail.getContent())
+				.startDate(detail.getStartDate())
+				.endDate(detail.getEndDate())
+				.team(detail.getProject()
+					.getTeam()
+					.stream()
+					.filter(t -> t.getMember() != null)
+					.map(TeamMember::from)
+					.collect(Collectors.toList()))
+				.applicants(
+					detail.getProject().getApplicants().stream().map(TeamMember::from).collect(Collectors.toList()))
+				.build();
+
+			if (detail.getLounge() != null) {
+				detailDto.setLoungeId(detail.getLounge().getId());
+			}
+			return detailDto;
+		}
 	}
 
 	@Getter
@@ -181,6 +220,28 @@ public class ProjectDto {
 		private String profileJobName;
 		private String projectJobName;
 		private String school;
+
+		public static TeamMember from(ProjectTeam team) {
+			return TeamMember.builder()
+				.memberId(team.getMember().getId())
+				.nickname(team.getMember().getNickname())
+				.userProfileImage(team.getMember().getUserProfileImage())
+				.profileJobName(team.getMember().getJob().getName())
+				.projectJobName(team.getJob().getName())
+				.school(team.getMember().getUniversity())
+				.build();
+		}
+
+		public static TeamMember from(ProjectApplicant team) {
+			return TeamMember.builder()
+				.memberId(team.getApplicant().getId())
+				.nickname(team.getApplicant().getNickname())
+				.userProfileImage(team.getApplicant().getUserProfileImage())
+				.profileJobName(team.getApplicant().getJob().getName())
+				.projectJobName(team.getJob().getName())
+				.school(team.getApplicant().getUniversity())
+				.build();
+		}
 
 	}
 

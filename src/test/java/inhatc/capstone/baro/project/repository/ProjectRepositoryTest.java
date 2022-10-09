@@ -6,6 +6,7 @@ import static inhatc.capstone.baro.project.domain.QProjectTeam.*;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -23,6 +25,7 @@ import inhatc.capstone.baro.member.domain.QMember;
 import inhatc.capstone.baro.project.domain.Project;
 import inhatc.capstone.baro.project.domain.ProjectDetail;
 import inhatc.capstone.baro.project.domain.QProject;
+import inhatc.capstone.baro.project.dto.ProjectDto;
 
 @SpringBootTest
 @Transactional
@@ -104,23 +107,33 @@ class ProjectRepositoryTest {
 	@Test
 	@DisplayName("페이징 쿼리 테스트")
 	public void pageQueryTest() {
-		List<Project> fetch = factory.select(project)
+		List<Tuple> fetch = factory.select(
+				project.title,
+				project.leader,
+				project.team,
+				project.id,
+				project.purpose,
+				project.state,
+				project.image,
+				project.likeCount,
+				project.viewCount
+			)
 			.from(project)
 			.distinct()
-			.innerJoin(project.leader, QMember.member)
-			.leftJoin(project.team, projectTeam)
-			//.fetchJoin()
+			// .innerJoin(project.leader, QMember.member)
+			// .leftJoin(project.team, projectTeam)
+			// .fetchJoin()
 			.where(
-				projectTeam.project.id.eq(project.id),
+				//	projectTeam.project.id.eq(project.id),
 				likeSchool("인하공업전문대"),
 				eqPurpose("사이드 프로젝트"),
 				eqJob(12L)
 			)
-			.offset(5)
-			.limit(1)
+			.offset(1)
+			.limit(5)
 			.fetch();
-
-		System.out.println(fetch.get(0).getTeam().get(0).getJob().getName());
+		System.out.println(fetch);
+		//System.out.println(fetch.get(0).getTeam().get(0).getJob().getName());
 
 		// JPAQuery<Project> countQuery = factory
 		// 	.select(project)
@@ -136,6 +149,20 @@ class ProjectRepositoryTest {
 		// 	);
 
 		//	System.out.println(countQuery.fetch());
+	}
+
+	@Test
+	@DisplayName("프로젝트 상세 조회 테스트")
+	public void projectDetailTest() {
+		Optional<ProjectDetail> detail = Optional.ofNullable(factory.selectFrom(projectDetail)
+			.innerJoin(projectDetail.project.leader, QMember.member)
+			.fetchJoin()
+			.where(projectDetail.id.eq(33L))
+			.fetchOne());
+		ProjectDto.Detail detailDto = ProjectDto.Detail.from(detail.get());
+		System.out.println(detailDto.getDescription());
+		System.out.println(detailDto.getSkill());
+		System.out.println(detail.get().getProject());
 	}
 
 	private BooleanExpression likeSchool(String school) {
