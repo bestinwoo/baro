@@ -17,10 +17,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import inhatc.capstone.baro.exception.ErrorResponse;
 import inhatc.capstone.baro.project.dto.ProjectDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
@@ -69,6 +73,18 @@ public class ProjectController {
 	@GetMapping("/{id}")
 	public ResponseEntity<ProjectDto.Detail> getProjectDetail(@PathVariable Long id) {
 		return ResponseEntity.ok(projectService.getProjectDetail(id));
+	}
+
+	//프로젝트 지원하기
+	@Operation(summary = "프로젝트 지원하기")
+	@ApiResponses({
+		@ApiResponse(responseCode = "204", description = "지원 완료"),
+		@ApiResponse(responseCode = "400", description = "지원 실패", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	})
+	@PostMapping("/apply")
+	public ResponseEntity<?> applyProject(@RequestBody ProjectDto.Apply apply) {
+		projectService.applyToProject(apply);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }
 

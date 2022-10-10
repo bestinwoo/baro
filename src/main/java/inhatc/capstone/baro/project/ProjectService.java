@@ -13,13 +13,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import inhatc.capstone.baro.exception.CustomException;
 import inhatc.capstone.baro.image.ImageRepository;
+import inhatc.capstone.baro.job.Job;
+import inhatc.capstone.baro.jwt.SecurityUtil;
+import inhatc.capstone.baro.member.domain.Member;
 import inhatc.capstone.baro.project.domain.Project;
+import inhatc.capstone.baro.project.domain.ProjectApplicant;
 import inhatc.capstone.baro.project.domain.ProjectDetail;
 import inhatc.capstone.baro.project.dto.ProjectDto;
 import inhatc.capstone.baro.project.dto.ProjectDto.Request;
 import inhatc.capstone.baro.project.dto.ProjectDto.Summary;
+import inhatc.capstone.baro.project.repository.ProjectApplicantRepository;
 import inhatc.capstone.baro.project.repository.ProjectDetailRepository;
 import inhatc.capstone.baro.project.repository.ProjectRepository;
+import inhatc.capstone.baro.project.repository.ProjectTeamRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -28,6 +34,8 @@ import lombok.RequiredArgsConstructor;
 public class ProjectService {
 	private final ProjectRepository projectRepository;
 	private final ProjectDetailRepository projectDetailRepository;
+	private final ProjectTeamRepository projectTeamRepository;
+	private final ProjectApplicantRepository projectApplicantRepository;
 	private final ImageRepository imageRepository;
 
 	//프로젝트 생성
@@ -75,6 +83,33 @@ public class ProjectService {
 		return projectDetailRepository.findById(id)
 			.map(ProjectDto.Detail::from)
 			.orElseThrow(() -> new CustomException(NOT_FOUND_PROJECT));
+	}
+
+	//프로젝트 지원
+	public void applyToProject(ProjectDto.Apply apply) {
+		Long memberId = SecurityUtil.getCurrentMemberId();
+		//이미 팀에 소속되어 있는지 확인
+		if (projectTeamRepository.existsByMemberIdAndProjectId(memberId, apply.getProjectId())) {
+			throw new CustomException(EXIST_PROJECT_MEMBER);
+		}
+
+		//지원 직무에 자리가 있는지 확인
+		if (!projectTeamRepository.existsByProjectIdAndJobIdAndMemberIdIsNull(apply.getProjectId(), apply.getJobId())) {
+			throw new CustomException(FULL_PROJECT_JOB_MEMBER);
+		}
+
+		//이미 지원했는지 확인
+		if (projectApplicantRepository.existsByApplicantId(memberId)) {
+			throw new CustomException(EXIST_PROJECT_APPLICANT);
+		}
+		ProjectApplicant applicant = ProjectApplicant.builder()
+			.job(Job.builder().id(apply.getJobId()).build())
+			.project(Project.builder().id(apply.getProjectId()).build())
+			.applicant(Member.builder().id(memberId).build())
+			.build();
+
+		projectApplicantRepository.save(applicant);
+
 	}
 	//프로젝트 수정
 

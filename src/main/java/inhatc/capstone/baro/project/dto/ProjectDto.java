@@ -165,18 +165,6 @@ public class ProjectDto {
 	@Setter
 	@Builder
 	public static class Detail {
-		// private Long id;
-		// @Schema(description = "프로젝트명")
-		// private String title;
-		// @Schema(description = "리더 닉네임")
-		// private String leaderNickname;
-		// @Schema(description = "프로젝트 상태 \n R = 모집중\nC = 진행중\nE = 완료")
-		// private String state;
-		// private List<RecruitJob> jobs; // 모집 현황
-		// private Long likeCount;
-		// private Long viewCount;
-		// @Schema(description = "프로젝트 목적", defaultValue = "사이드 프로젝트")
-		// private String purpose;
 		private Summary summary;
 		private Set<String> skill;
 		private String description;
@@ -253,6 +241,15 @@ public class ProjectDto {
 		private String purpose;
 		private Long jobId;
 		private String state;
+	}
+
+	@Getter
+	@Setter
+	public static class Apply {
+		@NotNull(message = "프로젝트 ID를 입력해주세요")
+		private Long projectId;
+		@NotNull(message = "지원 직무 ID를 입력해주세요")
+		private Long jobId;
 	}
 
 }
