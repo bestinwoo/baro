@@ -1,8 +1,13 @@
 package inhatc.capstone.baro.image;
 
 import java.io.IOException;
+import java.nio.file.Files;
 
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,5 +51,19 @@ public class ImageController {
 			}
 		}
 		return ErrorResponse.toResponseEntity(ErrorCode.INVALID_INPUT_VALUE);
+	}
+
+	@Operation(summary = "이미지 조회")
+	@Parameters({
+		@Parameter(name = "type", description = "프로젝트 이미지일 경우 project, 회원 이미지일 경우 member", required = true),
+		@Parameter(name = "fileName", description = "파일 이름", required = true)
+	})
+	@GetMapping("/image/{type}/{fileName}")
+	public ResponseEntity<Resource> getImageByName(@PathVariable String type, @PathVariable String fileName) throws
+		IOException {
+		Resource resource = imageService.getImageByPath(fileName, type);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", Files.probeContentType(resource.getFile().toPath()));
+		return ResponseEntity.ok().headers(headers).body(resource);
 	}
 }

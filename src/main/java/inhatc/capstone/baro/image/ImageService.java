@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,4 +39,17 @@ public class ImageService {
 		imageRepository.save(image);
 		return image.getImagePath();
 	}
+
+	public Resource getImageByPath(String fileName, String type) {
+		String absolutePath = new File("").getAbsolutePath() + "\\";
+		String path = absolutePath + "src/main/resources/images/" + type + "/" + fileName;
+		Resource resource = new FileSystemResource(path);
+
+		if (!resource.exists()) {
+			throw new CustomException(ErrorCode.NOT_FOUND_IMAGE);
+		}
+		
+		return resource;
+	}
+
 }
