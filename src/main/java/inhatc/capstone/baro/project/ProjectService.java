@@ -78,11 +78,11 @@ public class ProjectService {
 	}
 
 	//프로젝트 상세 조회
-	@Transactional(readOnly = true)
 	public ProjectDto.Detail getProjectDetail(Long id) {
-		return projectDetailRepository.findById(id)
-			.map(ProjectDto.Detail::from)
+		ProjectDetail detail = projectDetailRepository.findById(id)
 			.orElseThrow(() -> new CustomException(NOT_FOUND_PROJECT));
+		detail.getProject().increaseViewCount();
+		return ProjectDto.Detail.from(detail);
 	}
 
 	//프로젝트 지원
