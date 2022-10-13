@@ -9,7 +9,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import inhatc.capstone.baro.exception.ErrorResponse;
+import inhatc.capstone.baro.jwt.SecurityUtil;
 import inhatc.capstone.baro.project.dto.ProjectDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -94,11 +94,25 @@ public class ProjectController {
 		@ApiResponse(responseCode = "204", description = "취소 완료"),
 		@ApiResponse(responseCode = "400", description = "취소 실패", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
-	@DeleteMapping("/apply/{projectId}")
+	@PostMapping("/apply/{projectId}")
 	public ResponseEntity<?> cancelApply(@PathVariable Long projectId) {
-		projectService.cancelApplicant(projectId);
+		Long memberId = SecurityUtil.getCurrentMemberId();
+		projectService.deleteApplicant(projectId, memberId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
+
+	//프로젝트 지원자 거절
+	@Operation(summary = "프로젝트 지원자 거절")
+	@ApiResponses({
+		@ApiResponse(responseCode = "204", description = "완료"),
+		@ApiResponse(responseCode = "400", description = "실패", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	})
+	@PostMapping("/apply/{projectId}/{memberId}")
+	public ResponseEntity<?> deniedApply(@PathVariable Long projectId, @PathVariable Long memberId) {
+		projectService.deniedApplicant(projectId, memberId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+
 }
 
 

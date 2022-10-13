@@ -113,17 +113,29 @@ public class ProjectService {
 	}
 
 	//프로젝트 지원 취소
-	public void cancelApplicant(Long projectId) {
-		Long memberId = SecurityUtil.getCurrentMemberId();
+	public void deleteApplicant(Long projectId, Long memberId) {
 		ProjectApplicant applicant = projectApplicantRepository.findByProjectIdAndApplicantId(projectId, memberId)
 			.orElseThrow(() -> new CustomException(INVALID_ID));
 
 		projectApplicantRepository.delete(applicant);
 	}
+
 	//지원자 수락
+	public void acceptApplicant(Long projectId, Long applicantId) {
+
+	}
 
 	//지원자 거절
+	public void deniedApplicant(Long projectId, Long applicantId) {
+		Long currentMemberId = SecurityUtil.getCurrentMemberId();
+		Project project = projectRepository.findById(projectId)
+			.orElseThrow(() -> new CustomException(NOT_FOUND_PROJECT));
+		if (!project.getLeader().getId().equals(currentMemberId)) {
+			throw new CustomException(NO_PERMISSION);
+		}
 
+		deleteApplicant(projectId, applicantId);
+	}
 	//프로젝트 수정
 
 	//프로젝트 삭제
