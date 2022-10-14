@@ -19,6 +19,7 @@ import inhatc.capstone.baro.member.domain.Member;
 import inhatc.capstone.baro.project.domain.Project;
 import inhatc.capstone.baro.project.domain.ProjectApplicant;
 import inhatc.capstone.baro.project.domain.ProjectDetail;
+import inhatc.capstone.baro.project.domain.ProjectTeam;
 import inhatc.capstone.baro.project.dto.ProjectDto;
 import inhatc.capstone.baro.project.dto.ProjectDto.Request;
 import inhatc.capstone.baro.project.dto.ProjectDto.Summary;
@@ -109,7 +110,6 @@ public class ProjectService {
 			.build();
 
 		projectApplicantRepository.save(applicant);
-
 	}
 
 	//프로젝트 지원 취소
@@ -121,20 +121,32 @@ public class ProjectService {
 	}
 
 	//지원자 수락
-	public void acceptApplicant(Long projectId, Long applicantId) {
+	public void acceptApplicant(Long applicantId) {
+		ProjectApplicant applicant = projectApplicantRepository.findById(applicantId)
+			.orElseThrow(() -> new CustomException(INVALID_APPLICANT_ID));
 
+		//지원 직무에 자리가 있는지 확인
+		ProjectTeam projectTeam = projectTeamRepository.findTopByProjectIdAndJobIdAndMemberIdIsNull(
+			applicant.getProject().getId(),
+			applicant.getJob().getId()).orElseThrow(() -> new CustomException(EXIST_PROJECT_APPLICANT));
+
+		projectTeam.joinTeam(Member.builder().id(applicant.getApplicant().getId()).build());
+
+		projectApplicantRepository.delete(applicant);
 	}
 
 	//지원자 거절
-	public void deniedApplicant(Long projectId, Long applicantId) {
+	public void rejectApply(Long applicantId) {
+		ProjectApplicant applicant = projectApplicantRepository.findById(applicantId)
+			.orElseThrow(() -> new CustomException(INVALID_APPLICANT_ID));
+
 		Long currentMemberId = SecurityUtil.getCurrentMemberId();
-		Project project = projectRepository.findById(projectId)
-			.orElseThrow(() -> new CustomException(NOT_FOUND_PROJECT));
-		if (!project.getLeader().getId().equals(currentMemberId)) {
+
+		if (!applicant.getProject().getLeader().getId().equals(currentMemberId)) {
 			throw new CustomException(NO_PERMISSION);
 		}
 
-		deleteApplicant(projectId, applicantId);
+		projectApplicantRepository.delete(applicant);
 	}
 	//프로젝트 수정
 

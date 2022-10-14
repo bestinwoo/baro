@@ -38,6 +38,10 @@ public class ProjectTeam {
 		return this;
 	}
 
+	public void joinTeam(Member member) {
+		this.member = member;
+	}
+
 	@ManyToOne
 	@JoinColumn(name = "skill_id")
 	private Job job;

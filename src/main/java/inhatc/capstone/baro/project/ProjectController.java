@@ -9,6 +9,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -94,7 +95,7 @@ public class ProjectController {
 		@ApiResponse(responseCode = "204", description = "취소 완료"),
 		@ApiResponse(responseCode = "400", description = "취소 실패", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
-	@PostMapping("/apply/{projectId}")
+	@PostMapping("/apply/cancel/{projectId}")
 	public ResponseEntity<?> cancelApply(@PathVariable Long projectId) {
 		Long memberId = SecurityUtil.getCurrentMemberId();
 		projectService.deleteApplicant(projectId, memberId);
@@ -107,12 +108,23 @@ public class ProjectController {
 		@ApiResponse(responseCode = "204", description = "완료"),
 		@ApiResponse(responseCode = "400", description = "실패", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
-	@PostMapping("/apply/{projectId}/{memberId}")
-	public ResponseEntity<?> deniedApply(@PathVariable Long projectId, @PathVariable Long memberId) {
-		projectService.deniedApplicant(projectId, memberId);
+	@DeleteMapping("/apply/{applicantId}")
+	public ResponseEntity<?> rejectApply(@PathVariable Long applicantId) {
+		projectService.rejectApply(applicantId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
+	//프로젝트 지원자 수락
+	@Operation(summary = "프로젝트 지원자 수락")
+	@ApiResponses({
+		@ApiResponse(responseCode = "204", description = "완료"),
+		@ApiResponse(responseCode = "400", description = "실패", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	})
+	@PostMapping("/apply/{applicantId}")
+	public ResponseEntity<?> acceptApply(@PathVariable Long applicantId) {
+		projectService.acceptApplicant(applicantId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
 }
 
 

@@ -20,6 +20,7 @@ public enum ErrorCode {
 	EXIST_PROJECT_MEMBER(BAD_REQUEST, "이미 팀에 소속된 유저입니다."),
 	EXIST_PROJECT_APPLICANT(BAD_REQUEST, "이미 지원중입니다."),
 	FULL_PROJECT_JOB_MEMBER(BAD_REQUEST, "해당 분야의 모집이 없거나 이미 완료되었습니다."),
+	INVALID_APPLICANT_ID(BAD_REQUEST, "해당 지원 정보를 찾을 수 없습니다."),
 	// 401 UNAUTHORIZED
 	INVALID_TOKEN(UNAUTHORIZED, "유효하지 않은 토큰입니다."),
 

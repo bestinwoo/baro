@@ -171,6 +171,7 @@ public class ProjectDto {
 		private LocalDate startDate;
 		private LocalDate endDate;
 		private Long loungeId;
+		private String ideaProviderName;
 		private List<TeamMember> team;
 		private List<TeamMember> applicants;
 
@@ -193,6 +194,7 @@ public class ProjectDto {
 
 			if (detail.getLounge() != null) {
 				detailDto.setLoungeId(detail.getLounge().getId());
+				detailDto.setIdeaProviderName(detail.getLounge().getMember().getNickname());
 			}
 			return detailDto;
 		}
@@ -202,6 +204,7 @@ public class ProjectDto {
 	@Setter
 	@Builder
 	public static class TeamMember {
+		private Long id;
 		private Long memberId;
 		private String nickname;
 		private String userProfileImage;
@@ -211,6 +214,7 @@ public class ProjectDto {
 
 		public static TeamMember from(ProjectTeam team) {
 			return TeamMember.builder()
+				.id(team.getId())
 				.memberId(team.getMember().getId())
 				.nickname(team.getMember().getNickname())
 				.userProfileImage(team.getMember().getUserProfileImage())
@@ -222,6 +226,7 @@ public class ProjectDto {
 
 		public static TeamMember from(ProjectApplicant team) {
 			return TeamMember.builder()
+				.id(team.getId())
 				.memberId(team.getApplicant().getId())
 				.nickname(team.getApplicant().getNickname())
 				.userProfileImage(team.getApplicant().getUserProfileImage())
