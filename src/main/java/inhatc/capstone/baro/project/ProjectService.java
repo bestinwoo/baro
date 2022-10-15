@@ -133,6 +133,10 @@ public class ProjectService {
 		projectTeam.joinTeam(Member.builder().id(applicant.getApplicant().getId()).build());
 
 		projectApplicantRepository.delete(applicant);
+
+		if (!projectTeamRepository.existsByProjectIdAndMemberIdIsNull(projectTeam.getProject().getId())) {
+			projectTeam.getProject().changeProjectState("C");
+		}
 	}
 
 	//지원자 거절

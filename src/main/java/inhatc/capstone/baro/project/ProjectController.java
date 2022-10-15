@@ -126,5 +126,3 @@ public class ProjectController {
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }
-
-

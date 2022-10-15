@@ -11,5 +11,7 @@ public interface ProjectTeamRepository extends JpaRepository<ProjectTeam, Long> 
 
 	boolean existsByProjectIdAndJobIdAndMemberIdIsNull(Long projectId, Long jobId);
 
+	boolean existsByProjectIdAndMemberIdIsNull(Long projectId);
+
 	Optional<ProjectTeam> findTopByProjectIdAndJobIdAndMemberIdIsNull(Long projectId, Long jobId);
 }

@@ -63,6 +63,10 @@ public class Project {
 		this.viewCount += 1;
 	}
 
+	public void changeProjectState(String state) {
+		this.state = state;
+	}
+
 	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<ProjectTeam> team;
 
