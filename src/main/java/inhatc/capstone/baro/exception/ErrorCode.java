@@ -21,6 +21,9 @@ public enum ErrorCode {
 	EXIST_PROJECT_APPLICANT(BAD_REQUEST, "이미 지원중입니다."),
 	FULL_PROJECT_JOB_MEMBER(BAD_REQUEST, "해당 분야의 모집이 없거나 이미 완료되었습니다."),
 	INVALID_APPLICANT_ID(BAD_REQUEST, "해당 지원 정보를 찾을 수 없습니다."),
+	NOT_DID_LIKE(BAD_REQUEST, "해당 프로젝트를 좋아요한 기록이 없습니다."),
+	ALREADY_LIKE(BAD_REQUEST, "이미 해당 프로젝트에 좋아요를 눌렀습니다."),
+
 	// 401 UNAUTHORIZED
 	INVALID_TOKEN(UNAUTHORIZED, "유효하지 않은 토큰입니다."),
 
