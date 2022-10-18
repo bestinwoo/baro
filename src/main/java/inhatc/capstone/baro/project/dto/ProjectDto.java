@@ -174,6 +174,7 @@ public class ProjectDto {
 		private String ideaProviderName;
 		private List<TeamMember> team;
 		private List<TeamMember> applicants;
+		private boolean isLike;
 
 		public static Detail from(ProjectDetail detail) {
 			Detail detailDto = Detail.builder()

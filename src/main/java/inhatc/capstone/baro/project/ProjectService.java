@@ -15,6 +15,7 @@ import inhatc.capstone.baro.exception.CustomException;
 import inhatc.capstone.baro.image.ImageRepository;
 import inhatc.capstone.baro.job.Job;
 import inhatc.capstone.baro.jwt.SecurityUtil;
+import inhatc.capstone.baro.likes.LikesRepository;
 import inhatc.capstone.baro.member.domain.Member;
 import inhatc.capstone.baro.project.domain.Project;
 import inhatc.capstone.baro.project.domain.ProjectApplicant;
@@ -37,6 +38,7 @@ public class ProjectService {
 	private final ProjectDetailRepository projectDetailRepository;
 	private final ProjectTeamRepository projectTeamRepository;
 	private final ProjectApplicantRepository projectApplicantRepository;
+	private final LikesRepository likesRepository;
 	private final ImageRepository imageRepository;
 
 	//프로젝트 생성
@@ -79,11 +81,14 @@ public class ProjectService {
 	}
 
 	//프로젝트 상세 조회
-	public ProjectDto.Detail getProjectDetail(Long id) {
+	public ProjectDto.Detail getProjectDetail(Long id, Long memberId) {
 		ProjectDetail detail = projectDetailRepository.findById(id)
 			.orElseThrow(() -> new CustomException(NOT_FOUND_PROJECT));
 		detail.getProject().increaseViewCount();
-		return ProjectDto.Detail.from(detail);
+
+		ProjectDto.Detail response = ProjectDto.Detail.from(detail);
+		response.setLike(likesRepository.existsByMemberIdAndProjectId(memberId, id));
+		return response;
 	}
 
 	//프로젝트 지원

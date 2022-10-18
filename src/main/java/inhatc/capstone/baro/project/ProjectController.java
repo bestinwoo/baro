@@ -73,8 +73,9 @@ public class ProjectController {
 	//프로젝트 상세 조회
 	@Operation(summary = "프로젝트 상세 조회")
 	@GetMapping("/{id}")
-	public ResponseEntity<ProjectDto.Detail> getProjectDetail(@PathVariable Long id) {
-		return ResponseEntity.ok(projectService.getProjectDetail(id));
+	public ResponseEntity<ProjectDto.Detail> getProjectDetail(@PathVariable Long id,
+		@RequestParam(required = false) Long memberId) {
+		return ResponseEntity.ok(projectService.getProjectDetail(id, memberId));
 	}
 
 	//프로젝트 지원하기
