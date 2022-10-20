@@ -4,8 +4,12 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import inhatc.capstone.baro.member.domain.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 public class MemberDto {
@@ -30,5 +34,48 @@ public class MemberDto {
 		@NotBlank(message = "대학교 이름을 입력해주세요.")
 		@Schema(description = "대학교 이름", defaultValue = "인하공업전문대학")
 		private String university;
+	}
+
+	@Getter
+	@Setter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@Builder
+	public static class Info {
+		private Long id;
+		private String nickName;
+		private String imageUrl;
+		private String email;
+		private Long jobId;
+		private String jobParentName;
+		private String jobChildName;
+		private String jobLevel;
+		private String school;
+		private String introduce;
+
+		public static Info from(Member member) {
+			return Info.builder()
+				.id(member.getId())
+				.nickName(member.getNickname())
+				.imageUrl(member.getUserProfileImage())
+				.email(member.getEmail())
+				.jobId(member.getJob().getId())
+				.jobParentName(member.getJob().getParent().getName())
+				.jobChildName(member.getJob().getName())
+				.school(member.getUniversity())
+				.introduce(member.getIntroduce())
+				.build();
+
+		}
+	}
+
+	@Getter
+	@Setter
+	public static class Modify {
+		private String imageUrl;
+		private Long jobId;
+		private String jobLevel;
+		private String introduce;
+		private String nickname;
 	}
 }

@@ -24,5 +24,12 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
 	Optional<Member> findByEmailAndProvider(String email, OAuth2Provider provider);
 
+	/**
+	 * ID로 회원가입 완료된 회원 조회
+	 * @param id 조회할 회원의 ID
+	 * @return Optional Member
+	 */
+	Optional<Member> findByIdAndIsFirstIsFalse(Long id);
+
 	boolean existsByNickname(String nickname);
 }
