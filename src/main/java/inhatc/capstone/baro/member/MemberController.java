@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,6 +47,14 @@ public class MemberController {
 	@GetMapping("/{memberId}")
 	public ResponseEntity<MemberDto.Info> getMemberInfo(@PathVariable Long memberId) {
 		return ResponseEntity.ok(memberService.getMemberInfo(memberId));
+	}
+
+	@Operation(summary = "회원정보 수정")
+	@PatchMapping("/{memberId}")
+	public ResponseEntity<MemberDto.Info> modifyMemberInfo(@PathVariable Long memberId,
+		@RequestBody MemberDto.Modify modify) {
+		MemberDto.Info info = memberService.modifyMemberInfo(memberId, modify);
+		return ResponseEntity.ok(info);
 	}
 
 }

@@ -43,7 +43,7 @@ public class MemberDto {
 	@Builder
 	public static class Info {
 		private Long id;
-		private String nickName;
+		private String nickname;
 		private String imageUrl;
 		private String email;
 		private Long jobId;
@@ -54,18 +54,21 @@ public class MemberDto {
 		private String introduce;
 
 		public static Info from(Member member) {
-			return Info.builder()
+			Info info = Info.builder()
 				.id(member.getId())
-				.nickName(member.getNickname())
-				.imageUrl(member.getUserProfileImage())
+				.nickname(member.getNickname())
 				.email(member.getEmail())
 				.jobId(member.getJob().getId())
 				.jobParentName(member.getJob().getParent().getName())
 				.jobChildName(member.getJob().getName())
+				.jobLevel(member.getJobLevel())
 				.school(member.getUniversity())
 				.introduce(member.getIntroduce())
 				.build();
-
+			if (member.getUserProfileImage() != null) {
+				info.imageUrl = member.getUserProfileImage().getImagePath();
+			}
+			return info;
 		}
 	}
 

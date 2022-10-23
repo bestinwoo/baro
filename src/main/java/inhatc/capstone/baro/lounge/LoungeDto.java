@@ -41,7 +41,7 @@ public class LoungeDto {
 			return Response.builder()
 				.memberId(lounge.getMember().getId())
 				.memberNickname(lounge.getMember().getNickname())
-				.memberProfileUrl(lounge.getMember().getUserProfileImage())
+				.memberProfileUrl(lounge.getMember().getUserProfileImage().getImagePath())
 				.content(lounge.getContent())
 				.createDate(lounge.getCreateDate())
 				.id(lounge.getId())

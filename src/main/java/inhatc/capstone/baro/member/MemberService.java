@@ -2,10 +2,17 @@ package inhatc.capstone.baro.member;
 
 import static inhatc.capstone.baro.exception.ErrorCode.*;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import inhatc.capstone.baro.exception.CustomException;
+import inhatc.capstone.baro.image.Image;
+import inhatc.capstone.baro.image.ImageRepository;
+import inhatc.capstone.baro.job.Job;
+import inhatc.capstone.baro.job.JobRepository;
+import inhatc.capstone.baro.jwt.SecurityUtil;
 import inhatc.capstone.baro.member.domain.Member;
 import inhatc.capstone.baro.member.dto.MemberDto;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class MemberService {
 	private final MemberRepository memberRepository;
+	private final JobRepository jobRepository;
+	private final ImageRepository imageRepository;
 
 	/**
 	 * 회원 가입
@@ -33,6 +42,7 @@ public class MemberService {
 	 * @param memberId 조회할 대상 회원 ID
 	 * @return 회원정보
 	 */
+	@Transactional(readOnly = true)
 	public MemberDto.Info getMemberInfo(Long memberId) {
 		Member member = memberRepository.findByIdAndIsFirstIsFalse(memberId)
 			.orElseThrow(() -> new CustomException(NOT_FOUND_MEMBER));
@@ -40,7 +50,22 @@ public class MemberService {
 		return MemberDto.Info.from(member);
 	}
 
-	public MemberDto.Info modifyMemberInfo(Long memberId) {
+	public MemberDto.Info modifyMemberInfo(Long memberId, MemberDto.Modify modify) {
+		if (!SecurityUtil.getCurrentMemberId().equals(memberId)) {
+			throw new CustomException(NO_PERMISSION);
+		}
+		Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(NOT_FOUND_MEMBER));
+		Optional<Job> job = Optional.empty();
+		Optional<Image> image = Optional.empty();
 
+		if (modify.getJobId() != null) {
+			job = jobRepository.findById(modify.getJobId());
+		}
+		if (modify.getImageUrl() != null) {
+			image = imageRepository.findById(modify.getImageUrl());
+		}
+		Member updateMemberInfo = member.updateMemberInfo(image, job, modify);
+
+		return MemberDto.Info.from(updateMemberInfo);
 	}
 }
