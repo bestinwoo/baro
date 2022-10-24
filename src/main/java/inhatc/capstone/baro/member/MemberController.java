@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import inhatc.capstone.baro.exception.ErrorResponse;
 import inhatc.capstone.baro.member.dto.MemberDto;
+import inhatc.capstone.baro.project.dto.ProjectDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -50,11 +51,23 @@ public class MemberController {
 	}
 
 	@Operation(summary = "회원정보 수정")
+	@ApiResponses({
+		@ApiResponse(responseCode = "200", description = "수정 완료"),
+		@ApiResponse(responseCode = "404", description = "존재하지 않는 멤버 ID", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+		@ApiResponse(responseCode = "403", description = "자신 외의 다른 멤버 수정 시도", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+	})
 	@PatchMapping("/{memberId}")
 	public ResponseEntity<MemberDto.Info> modifyMemberInfo(@PathVariable Long memberId,
 		@RequestBody MemberDto.Modify modify) {
 		MemberDto.Info info = memberService.modifyMemberInfo(memberId, modify);
 		return ResponseEntity.ok(info);
+	}
+
+	@Operation(summary = "프로젝트 현황")
+	@GetMapping("/{memberId}/project")
+	public ResponseEntity<ProjectDto.MyPage> getProjectStatus(@PathVariable Long memberId) {
+		ProjectDto.MyPage myProject = memberService.getMyProject(memberId);
+		return ResponseEntity.ok(myProject);
 	}
 
 }

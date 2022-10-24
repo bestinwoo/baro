@@ -18,6 +18,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import inhatc.capstone.baro.member.domain.QMember;
 import inhatc.capstone.baro.project.domain.Project;
+import inhatc.capstone.baro.project.domain.QProject;
 import inhatc.capstone.baro.project.dto.ProjectDto;
 import lombok.RequiredArgsConstructor;
 
@@ -63,6 +64,15 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 		//return new PageImpl<>(fetch.getResults(), pageable, fetch.getTotal());
 	}
 
+	@Override
+	public List<Project> findByMemberId(Long memberId) {
+		List<Project> project = queryFactory.selectFrom(QProject.project)
+			.innerJoin(QProject.project.team, projectTeam)
+			.where(eqTeamMemberId(memberId))
+			.fetch();
+		return project;
+	}
+
 	private BooleanExpression likeSchool(String school) {
 		if (!StringUtils.hasText(school)) {
 			return null;
@@ -89,5 +99,9 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 			return null;
 		}
 		return project.state.eq(state);
+	}
+
+	private BooleanExpression eqTeamMemberId(Long memberId) {
+		return projectTeam.member.id.eq(memberId);
 	}
 }

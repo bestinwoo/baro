@@ -165,6 +165,20 @@ class ProjectRepositoryTest {
 		System.out.println(detail.get().getProject());
 	}
 
+	@Test
+	@DisplayName("프로젝트 현황 조회 테스트")
+	public void projectStatusTest() {
+		List<Project> fetch = factory.selectFrom(project)
+			.innerJoin(project.team, projectTeam)
+			.where(projectTeam.member.id.eq(1L))
+			.fetch();
+
+		for (Project fetch1 : fetch) {
+			ProjectDto.Summary from = ProjectDto.Summary.from(fetch1);
+			System.out.println(from.getLeaderNickname());
+		}
+	}
+
 	private BooleanExpression likeSchool(String school) {
 		if (!StringUtils.hasText(school)) {
 			return null;

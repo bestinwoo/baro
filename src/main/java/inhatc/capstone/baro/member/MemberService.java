@@ -2,7 +2,9 @@ package inhatc.capstone.baro.member;
 
 import static inhatc.capstone.baro.exception.ErrorCode.*;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +17,9 @@ import inhatc.capstone.baro.job.JobRepository;
 import inhatc.capstone.baro.jwt.SecurityUtil;
 import inhatc.capstone.baro.member.domain.Member;
 import inhatc.capstone.baro.member.dto.MemberDto;
+import inhatc.capstone.baro.project.dto.ProjectDto;
+import inhatc.capstone.baro.project.repository.ProjectApplicantRepository;
+import inhatc.capstone.baro.project.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -24,6 +29,8 @@ public class MemberService {
 	private final MemberRepository memberRepository;
 	private final JobRepository jobRepository;
 	private final ImageRepository imageRepository;
+	private final ProjectApplicantRepository applicantRepository;
+	private final ProjectRepository projectRepository;
 
 	/**
 	 * 회원 가입
@@ -50,6 +57,12 @@ public class MemberService {
 		return MemberDto.Info.from(member);
 	}
 
+	/**
+	 *
+	 * @param memberId 수정할 멤버 ID
+	 * @param modify 수정할 정보
+	 * @return 수정 후 멤버 정보
+	 */
 	public MemberDto.Info modifyMemberInfo(Long memberId, MemberDto.Modify modify) {
 		if (!SecurityUtil.getCurrentMemberId().equals(memberId)) {
 			throw new CustomException(NO_PERMISSION);
@@ -67,5 +80,39 @@ public class MemberService {
 		Member updateMemberInfo = member.updateMemberInfo(image, job, modify);
 
 		return MemberDto.Info.from(updateMemberInfo);
+	}
+
+	/**
+	 * 프로젝트 현황 조회
+	 * @param memberId 조회할 멤버 ID
+	 * @return apply : 지원 현황, progress : 진행중(팀에 소속되었으나 완료되지 않음), complete : 완료된 프로젝트
+	 */
+	public ProjectDto.MyPage getMyProject(Long memberId) {
+		ProjectDto.MyPage myProject = new ProjectDto.MyPage();
+		List<ProjectDto.Summary> apply = applicantRepository.findByApplicantId(memberId)
+			.stream()
+			.map(ap -> ProjectDto.Summary.from(ap.getProject()))
+			.collect(
+				Collectors.toList());
+		myProject.setApply(apply);
+
+		List<ProjectDto.Summary> memberProject = projectRepository.findByMemberId(memberId)
+			.stream()
+			.map(ProjectDto.Summary::from)
+			.collect(Collectors.toList());
+
+		myProject.setProgress(
+			memberProject.stream()
+				.filter(p -> !p.getState().equals("E"))
+				.collect(Collectors.toList())
+		);
+
+		myProject.setComplete(
+			memberProject.stream()
+				.filter(p -> p.getState().equals("E"))
+				.collect(Collectors.toList())
+		);
+
+		return myProject;
 	}
 }

@@ -1,5 +1,6 @@
 package inhatc.capstone.baro.project.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,4 +11,6 @@ public interface ProjectApplicantRepository extends JpaRepository<ProjectApplica
 	boolean existsByApplicantId(Long applicantId);
 
 	Optional<ProjectApplicant> findByProjectIdAndApplicantId(Long projectId, Long applicantId);
+
+	List<ProjectApplicant> findByApplicantId(Long applicantId);
 }

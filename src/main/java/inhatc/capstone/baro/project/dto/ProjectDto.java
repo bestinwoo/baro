@@ -258,4 +258,23 @@ public class ProjectDto {
 		private Long jobId;
 	}
 
+	@Getter
+	@Setter
+	@NoArgsConstructor
+	public static class MyPage {
+		private List<Summary> apply;
+		private List<Summary> progress;
+		private List<Summary> complete;
+
+		public static MyPage from(List<Project> project) {
+			MyPage myPage = new MyPage();
+			List<Summary> list = project.stream().map(Summary::from).collect(Collectors.toList());
+
+			myPage.apply = list.stream().filter(s -> s.getState().equals("R")).collect(Collectors.toList());
+			myPage.progress = list.stream().filter(s -> s.getState().equals("C")).collect(Collectors.toList());
+			myPage.apply = list.stream().filter(s -> s.getState().equals("E")).collect(Collectors.toList());
+
+			return myPage;
+		}
+	}
 }
