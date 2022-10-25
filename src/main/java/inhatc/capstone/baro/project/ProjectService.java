@@ -105,7 +105,7 @@ public class ProjectService {
 		}
 
 		//이미 지원했는지 확인
-		if (projectApplicantRepository.existsByApplicantId(memberId)) {
+		if (projectApplicantRepository.existsByApplicantIdAndProjectId(memberId, apply.getProjectId())) {
 			throw new CustomException(EXIST_PROJECT_APPLICANT);
 		}
 		ProjectApplicant applicant = ProjectApplicant.builder()

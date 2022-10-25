@@ -69,5 +69,4 @@ public class MemberController {
 		ProjectDto.MyPage myProject = memberService.getMyProject(memberId);
 		return ResponseEntity.ok(myProject);
 	}
-
 }

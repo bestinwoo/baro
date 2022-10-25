@@ -38,14 +38,18 @@ public class LoungeDto {
 		private String content;
 
 		public static Response from(Lounge lounge) {
-			return Response.builder()
+			Response response = Response.builder()
 				.memberId(lounge.getMember().getId())
 				.memberNickname(lounge.getMember().getNickname())
-				.memberProfileUrl(lounge.getMember().getUserProfileImage().getImagePath())
 				.content(lounge.getContent())
 				.createDate(lounge.getCreateDate())
 				.id(lounge.getId())
 				.build();
+
+			if (lounge.getMember().getUserProfileImage() != null) {
+				response.memberProfileUrl = lounge.getMember().getUserProfileImage().getImagePath();
+			}
+			return response;
 		}
 	}
 }

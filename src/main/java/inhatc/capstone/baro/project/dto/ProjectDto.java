@@ -214,27 +214,37 @@ public class ProjectDto {
 		private String school;
 
 		public static TeamMember from(ProjectTeam team) {
-			return TeamMember.builder()
+			TeamMember teamMember = TeamMember.builder()
 				.id(team.getId())
 				.memberId(team.getMember().getId())
 				.nickname(team.getMember().getNickname())
-				.userProfileImage(team.getMember().getUserProfileImage().getImagePath())
 				.profileJobName(team.getMember().getJob().getName())
 				.projectJobName(team.getJob().getName())
 				.school(team.getMember().getUniversity())
 				.build();
+
+			if (team.getMember().getUserProfileImage() != null) {
+				teamMember.userProfileImage = team.getMember().getUserProfileImage().getImagePath();
+			}
+
+			return teamMember;
 		}
 
 		public static TeamMember from(ProjectApplicant team) {
-			return TeamMember.builder()
+			TeamMember teamMember = TeamMember.builder()
 				.id(team.getId())
 				.memberId(team.getApplicant().getId())
 				.nickname(team.getApplicant().getNickname())
-				.userProfileImage(team.getApplicant().getUserProfileImage().getImagePath())
 				.profileJobName(team.getApplicant().getJob().getName())
 				.projectJobName(team.getJob().getName())
 				.school(team.getApplicant().getUniversity())
 				.build();
+
+			if (team.getApplicant().getUserProfileImage() != null) {
+				teamMember.userProfileImage = team.getApplicant().getUserProfileImage().getImagePath();
+			}
+
+			return teamMember;
 		}
 
 	}
