@@ -33,6 +33,7 @@ public enum ErrorCode {
 	//404 NOT_FOUND
 	NOT_FOUND_PROJECT(NOT_FOUND, "프로젝트를 찾을 수 없습니다."),
 	NOT_FOUND_IMAGE(NOT_FOUND, "이미지를 찾을 수 없습니다."),
+	NOT_FOUND_LOUNGE(NOT_FOUND, "라운지 아이디어를 찾을 수 없습니다."),
 	NOT_FOUND_MEMBER(NOT_FOUND, "회원을 찾을 수 없습니다.");
 
 	private final HttpStatus httpStatus;

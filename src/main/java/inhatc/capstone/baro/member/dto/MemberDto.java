@@ -47,6 +47,7 @@ public class MemberDto {
 		private String imageUrl;
 		private String email;
 		private Long jobId;
+		private Long point;
 		private String jobParentName;
 		private String jobChildName;
 		private String jobLevel;
@@ -63,6 +64,7 @@ public class MemberDto {
 				.jobChildName(member.getJob().getName())
 				.jobLevel(member.getJobLevel())
 				.school(member.getUniversity())
+				.point(member.getPoint())
 				.introduce(member.getIntroduce())
 				.build();
 			if (member.getUserProfileImage() != null) {

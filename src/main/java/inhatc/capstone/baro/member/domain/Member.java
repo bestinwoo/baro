@@ -19,6 +19,7 @@ import inhatc.capstone.baro.image.Image;
 import inhatc.capstone.baro.job.Job;
 import inhatc.capstone.baro.member.dto.MemberDto;
 import inhatc.capstone.baro.oauth2.OAuth2Provider;
+import inhatc.capstone.baro.project.dto.PointType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -71,6 +72,10 @@ public class Member {
 		this.jobLevel = dto.getJobLevel();
 		this.university = dto.getUniversity();
 		this.isFirst = false;
+	}
+
+	public void addPoint(PointType pointType) {
+		this.point += pointType.getPoint();
 	}
 
 	public Member updateMemberInfo(Optional<Image> image, Optional<Job> job, MemberDto.Modify modify) {

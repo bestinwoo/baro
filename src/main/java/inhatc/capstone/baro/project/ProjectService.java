@@ -16,11 +16,15 @@ import inhatc.capstone.baro.image.ImageRepository;
 import inhatc.capstone.baro.job.Job;
 import inhatc.capstone.baro.jwt.SecurityUtil;
 import inhatc.capstone.baro.likes.LikesRepository;
+import inhatc.capstone.baro.lounge.Lounge;
+import inhatc.capstone.baro.lounge.LoungeRepository;
+import inhatc.capstone.baro.member.MemberRepository;
 import inhatc.capstone.baro.member.domain.Member;
 import inhatc.capstone.baro.project.domain.Project;
 import inhatc.capstone.baro.project.domain.ProjectApplicant;
 import inhatc.capstone.baro.project.domain.ProjectDetail;
 import inhatc.capstone.baro.project.domain.ProjectTeam;
+import inhatc.capstone.baro.project.dto.PointType;
 import inhatc.capstone.baro.project.dto.ProjectDto;
 import inhatc.capstone.baro.project.dto.ProjectDto.Request;
 import inhatc.capstone.baro.project.dto.ProjectDto.Summary;
@@ -40,22 +44,38 @@ public class ProjectService {
 	private final ProjectApplicantRepository projectApplicantRepository;
 	private final LikesRepository likesRepository;
 	private final ImageRepository imageRepository;
+	private final MemberRepository memberRepository;
+	private final LoungeRepository loungeRepository;
 
 	//프로젝트 생성
 	public void createProject(ProjectDto.Create request) {
 		//이미지를 먼저 서버에 업로드해야 이미지 첨부 가능
 		imageRepository.findById(request.getThumbnailLink())
 			.orElseThrow(() -> new CustomException(NOT_FOUND_IMAGE));
+		Member leader = memberRepository.findById(request.getLeaderId())
+			.orElseThrow(() -> new CustomException(NOT_FOUND_MEMBER));
 
 		Project project = Project.createProject(request);
-		if (project.getLeader().isFirst()) { // 가입하지 않은 회원 프로젝트 생성 불가
+		if (leader.isFirst()) { // 가입하지 않은 회원 프로젝트 생성 불가
 			throw new CustomException(NOT_JOINED);
 		}
+
+		if (request.getLoungeId() != null) {
+			addPointLoungeWriter(request.getLoungeId());
+		}
+
+		leader.addPoint(PointType.CREATE_PROJECT);
 		Project save = projectRepository.save(project);
 
 		ProjectDetail detail = ProjectDetail.from(request);
 		detail.setProject(save);
 		projectDetailRepository.save(detail);
+	}
+
+	//아이디어 공유자 포인트 증가
+	private void addPointLoungeWriter(Long loungeId) {
+		Lounge lounge = loungeRepository.findById(loungeId).orElseThrow(() -> new CustomException(NOT_FOUND_LOUNGE));
+		lounge.getMember().addPoint(PointType.SHARED_IDEA);
 	}
 
 	//프로젝트 목록 조회
@@ -135,8 +155,8 @@ public class ProjectService {
 			applicant.getProject().getId(),
 			applicant.getJob().getId()).orElseThrow(() -> new CustomException(EXIST_PROJECT_APPLICANT));
 
-		projectTeam.joinTeam(Member.builder().id(applicant.getApplicant().getId()).build());
-
+		projectTeam.joinTeam(applicant.getApplicant());
+		applicant.getApplicant().addPoint(PointType.JOIN_PROJECT);
 		projectApplicantRepository.delete(applicant);
 
 		if (!projectTeamRepository.existsByProjectIdAndMemberIdIsNull(projectTeam.getProject().getId())) {
