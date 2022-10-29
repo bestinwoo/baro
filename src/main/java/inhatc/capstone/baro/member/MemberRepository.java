@@ -2,10 +2,15 @@ package inhatc.capstone.baro.member;
 
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import inhatc.capstone.baro.member.domain.Member;
 import inhatc.capstone.baro.oauth2.OAuth2Provider;
+import inhatc.capstone.baro.ranking.dto.PersonalRankingDto;
+import inhatc.capstone.baro.ranking.dto.SchoolRankingDto;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 	/**
@@ -32,4 +37,19 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 	Optional<Member> findByIdAndIsFirstIsFalse(Long id);
 
 	boolean existsByNickname(String nickname);
+
+	/**
+	 * 개인 랭킹 조회
+	 * @param pageable
+	 * @return 랭킹순으로 멤버 정렬하여 반환
+	 */
+	Page<PersonalRankingDto> findAllByOrderByPointDesc(Pageable pageable);
+
+	@Query(value =
+		"select m.university as university, sum(m.point) as point, count(m.university) as personnel "
+			+ "from Member m "
+			+ "group by m.university "
+			+ "order by point desc")
+	Page<SchoolRankingDto> findGroupByUniversityOrderByPointDesc(Pageable pageable);
+
 }

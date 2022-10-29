@@ -43,8 +43,9 @@ public class SecurityConfig {
 		http
 			.cors().configurationSource(request -> {
 				CorsConfiguration cors = new CorsConfiguration();
-				cors.setAllowedOrigins(List.of("*"));
-				cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+				cors.setAllowedOrigins(List.of("http://localhost:3000"));
+				cors.setAllowedMethods(List.of("PATCH", "GET", "POST", "PUT", "DELETE", "OPTIONS"));
+				cors.setAllowCredentials(true);
 				cors.setAllowedHeaders(List.of("*"));
 				return cors;
 			});
@@ -67,7 +68,7 @@ public class SecurityConfig {
 			.authorizeRequests()
 			.antMatchers(HttpMethod.OPTIONS).permitAll()
 			.antMatchers("/token/**", "/job/**").permitAll()
-			.antMatchers(HttpMethod.GET, "/project/**", "/image/**", "/lounge/**", "/member/**").permitAll()
+			.antMatchers(HttpMethod.GET, "/project/**", "/image/**", "/lounge/**", "/member/**", "/rank/**").permitAll()
 			//	.antMatchers("/member/**").permitAll()
 			.anyRequest().authenticated()
 

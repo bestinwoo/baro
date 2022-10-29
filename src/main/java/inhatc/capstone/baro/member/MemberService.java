@@ -20,6 +20,8 @@ import inhatc.capstone.baro.member.dto.MemberDto;
 import inhatc.capstone.baro.project.dto.ProjectDto;
 import inhatc.capstone.baro.project.repository.ProjectApplicantRepository;
 import inhatc.capstone.baro.project.repository.ProjectRepository;
+import inhatc.capstone.baro.ranking.School;
+import inhatc.capstone.baro.ranking.SchoolRepository;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -31,6 +33,7 @@ public class MemberService {
 	private final ImageRepository imageRepository;
 	private final ProjectApplicantRepository applicantRepository;
 	private final ProjectRepository projectRepository;
+	private final SchoolRepository schoolRepository;
 
 	/**
 	 * 회원 가입
@@ -40,6 +43,10 @@ public class MemberService {
 		Member member = memberRepository.findById(register.getId()).orElseThrow(() -> new CustomException(INVALID_ID));
 		if (!member.isFirst()) { // 이미 가입된 유저일경우 exception throw
 			throw new CustomException(EXIST_MEMBER);
+		}
+		
+		if (!schoolRepository.existsByName(register.getUniversity())) {
+			schoolRepository.save(School.builder().name(register.getUniversity()).point(0L).build());
 		}
 		member.registerMember(register);
 	}
