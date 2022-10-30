@@ -48,6 +48,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 	@Query(value =
 		"select m.university as university, sum(m.point) as point, count(m.university) as personnel "
 			+ "from Member m "
+			+ "where m.isFirst = false "
 			+ "group by m.university "
 			+ "order by point desc")
 	Page<SchoolRankingDto> findGroupByUniversityOrderByPointDesc(Pageable pageable);
