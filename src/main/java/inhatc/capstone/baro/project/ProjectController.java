@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import inhatc.capstone.baro.exception.ErrorResponse;
 import inhatc.capstone.baro.jwt.SecurityUtil;
 import inhatc.capstone.baro.project.dto.ProjectDto;
+import inhatc.capstone.baro.project.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;

@@ -1,4 +1,4 @@
-package inhatc.capstone.baro.project;
+package inhatc.capstone.baro.project.service;
 
 import static inhatc.capstone.baro.exception.ErrorCode.*;
 
@@ -177,9 +177,12 @@ public class ProjectService {
 
 		projectApplicantRepository.delete(applicant);
 	}
-	//프로젝트 수정
 
-	//프로젝트 삭제
-
-	//프로젝트 좋아요
+	//프로젝트 상태 변경(완료)
+	public Project changeStateCompletion(Long projectId) {
+		Project project = projectRepository.findById(projectId)
+			.orElseThrow(() -> new CustomException(NOT_FOUND_PROJECT));
+		project.changeProjectState("E");
+		return project;
+	}
 }

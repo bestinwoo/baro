@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import inhatc.capstone.baro.project.dto.ProjectDto;
+import inhatc.capstone.baro.project.service.ProjectService;
 
 @SpringBootTest
 class ProjectServiceTest {
