@@ -51,7 +51,7 @@ public class ProjectCompletion {
 	@JoinColumn(name = "id")
 	private Project project;
 
-	public static ProjectCompletion createCompletion(ProjectCompletionDto.Write write, Project project,
+	public static ProjectCompletion createCompletion(ProjectCompletionDto write, Project project,
 		List<Image> images) {
 		ProjectCompletion completion = ProjectCompletion.builder()
 			.project(project)

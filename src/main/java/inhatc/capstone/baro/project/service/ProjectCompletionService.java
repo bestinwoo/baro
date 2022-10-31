@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import inhatc.capstone.baro.exception.CustomException;
+import inhatc.capstone.baro.exception.ErrorCode;
 import inhatc.capstone.baro.image.Image;
 import inhatc.capstone.baro.image.ImageRepository;
 import inhatc.capstone.baro.project.domain.Project;
@@ -22,12 +24,19 @@ public class ProjectCompletionService {
 	private final ProjectService projectService;
 
 	//완성작 등록
-	public void projectComplete(ProjectCompletionDto.Write write) {
+	public void projectComplete(ProjectCompletionDto write) {
 		List<Image> images = imageRepository.findByImagePathIn(write.getImageList());
 
 		Project project = projectService.changeStateCompletion(write.getProjectId());
 		ProjectCompletion completion = ProjectCompletion.createCompletion(write, project, images);
 		projectCompletionRepository.save(completion);
 	}
+
 	//완성작 조회
+	public ProjectCompletionDto findProjectCompletionById(Long projectId) {
+		ProjectCompletion projectCompletion = projectCompletionRepository.findById(projectId)
+			.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_PROJECT));
+
+		return ProjectCompletionDto.from(projectCompletion);
+	}
 }
