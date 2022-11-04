@@ -32,12 +32,9 @@ public class ProjectCompletion {
 	//개요
 	@NotNull(message = "프로젝트 개요는 필수 항목입니다.")
 	private String summary;
-	//프로젝트 기능명세
-	@NotNull(message = "프로젝트 기능 명세는 필수 항목입니다.")
-	private String functionSpecification;
-	//완성후기
-	@NotNull(message = "프로젝트 후기는 필수 항목입니다.")
-	private String completionReview;
+	//프로젝트 기능명세 + 완성후기 (개발설명)
+	@NotNull(message = "프로젝트 개발 설명은 필수 항목입니다.")
+	private String description;
 	//성과
 	private String projectResult;
 	//깃허브
@@ -56,8 +53,7 @@ public class ProjectCompletion {
 		ProjectCompletion completion = ProjectCompletion.builder()
 			.project(project)
 			.summary(write.getSummary())
-			.functionSpecification(write.getFunctionSpecification())
-			.completionReview(write.getCompletionReview())
+			.description(write.getDescription())
 			.projectResult(write.getProjectResult())
 			.githubLink(write.getGithubLink())
 			.build();

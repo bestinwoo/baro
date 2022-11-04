@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 public class JobController {
 	private final JobRepository jobRepository;
 
+	//TODO: 직무 첫 조회 후 애플리케이션 메모리에 저장해서 (캐시) DB 조회 안하게 하기
 	@Operation(summary = "직무 조회")
 	@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = JobDto.class)))
 	@GetMapping("/job")

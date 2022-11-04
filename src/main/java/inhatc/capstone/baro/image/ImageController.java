@@ -31,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class ImageController {
 	private final ImageService imageService;
 
+	//TODO: 이미지 크기제한, 배열로 받기
 	@Operation(summary = "이미지 등록")
 	@Parameters({
 		@Parameter(name = "file", description = "이미지 파일(png 또는 jpg 파일로 확장자 제한)", required = true),

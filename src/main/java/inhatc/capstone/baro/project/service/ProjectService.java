@@ -38,6 +38,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional(rollbackFor = Exception.class)
 public class ProjectService {
+	//TODO: 서비스 분리하는 것이 좋을지도..
 	private final ProjectRepository projectRepository;
 	private final ProjectDetailRepository projectDetailRepository;
 	private final ProjectTeamRepository projectTeamRepository;
@@ -182,6 +183,11 @@ public class ProjectService {
 	public Project changeStateCompletion(Long projectId) {
 		Project project = projectRepository.findById(projectId)
 			.orElseThrow(() -> new CustomException(NOT_FOUND_PROJECT));
+
+		if (!project.getState().equals("C")) {
+			throw new CustomException(NOT_CONTINUE_PROJECT);
+		}
+		
 		project.changeProjectState("E");
 		return project;
 	}
