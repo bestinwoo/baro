@@ -9,6 +9,7 @@ import inhatc.capstone.baro.exception.CustomException;
 import inhatc.capstone.baro.exception.ErrorCode;
 import inhatc.capstone.baro.image.Image;
 import inhatc.capstone.baro.image.ImageRepository;
+import inhatc.capstone.baro.jwt.SecurityUtil;
 import inhatc.capstone.baro.project.domain.Project;
 import inhatc.capstone.baro.project.domain.ProjectCompletion;
 import inhatc.capstone.baro.project.dto.ProjectCompletionDto;
@@ -26,8 +27,13 @@ public class ProjectCompletionService {
 	//완성작 등록
 	public void projectComplete(ProjectCompletionDto write) {
 		List<Image> images = imageRepository.findByImagePathIn(write.getImageList());
-
 		Project project = projectService.changeStateCompletion(write.getProjectId());
+		Long currentMemberId = SecurityUtil.getCurrentMemberId();
+
+		if (!project.getLeader().getId().equals(currentMemberId)) {
+			throw new CustomException(ErrorCode.NO_PERMISSION);
+		}
+
 		ProjectCompletion completion = ProjectCompletion.createCompletion(write, project, images);
 		projectCompletionRepository.save(completion);
 	}
