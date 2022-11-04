@@ -1,36 +1,26 @@
-# Getting Started
+# 대학생을 위한 프로젝트 팀빌딩 및 아이디어 공유 서비스
+**project Name**: 바로 (Baro)
 
-### Reference Documentation
+**Project execution period** : 2022.09.19 ~ 2022.11 (진행중)
 
-For further reference, please consider the following sections:
 
-* [Official Gradle documentation](https://docs.gradle.org)
-* [Spring Boot Gradle Plugin Reference Guide](https://docs.spring.io/spring-boot/docs/2.7.3/gradle-plugin/reference/html/)
-* [Create an OCI image](https://docs.spring.io/spring-boot/docs/2.7.3/gradle-plugin/reference/html/#build-image)
-* [Spring Web](https://docs.spring.io/spring-boot/docs/2.7.3/reference/htmlsingle/#web)
-* [Spring Data JPA](https://docs.spring.io/spring-boot/docs/2.7.3/reference/htmlsingle/#data.sql.jpa-and-spring-data)
-* [Spring Boot DevTools](https://docs.spring.io/spring-boot/docs/2.7.3/reference/htmlsingle/#using.devtools)
-* [OAuth2 Client](https://docs.spring.io/spring-boot/docs/2.7.3/reference/htmlsingle/#web.security.oauth2.client)
-* [Spring Security](https://docs.spring.io/spring-boot/docs/2.7.3/reference/htmlsingle/#web.security)
-* [Validation](https://docs.spring.io/spring-boot/docs/2.7.3/reference/htmlsingle/#io.validation)
+## Description
+대학생들이 학교 팀 프로젝트 또는 사이드 프로젝트를 진행할 때 주제를 선정하는 것과 프로젝트 팀원을 구하는 일에 어려움을 겪고 있습니다.
 
-### Guides
 
-The following guides illustrate how to use some features concretely:
+또한, 일반적인 컴퓨터공학과 내에서는 상대적으로 개발자 팀원은 구하기 수월하지만 디자이너나 기획자 같은 비개발 직군을 팀원으로 모집하기에는 한계가 있습니다.
 
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
-* [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
-* [Securing a Web Application](https://spring.io/guides/gs/securing-web/)
-* [Spring Boot and OAuth2](https://spring.io/guides/tutorials/spring-boot-oauth2/)
-* [Authenticating a User with LDAP](https://spring.io/guides/gs/authenticating-ldap/)
-* [Accessing data with MySQL](https://spring.io/guides/gs/accessing-data-mysql/)
-* [Validation](https://spring.io/guides/gs/validating-form-input/)
 
-### Additional Links
+이를 해결하기 위해 자유롭게 아이디어를 공유하고 다양한 직군으로 이루어진 팀을 빌딩하여 프로젝트 완성물까지 관리할 수 있는 웹 서비스를 개발하고자 했습니다.
 
-These additional references should also help you:
+## About Project
 
-* [Gradle Build Scans – insights for your project's build](https://scans.gradle.com#gradle)
 
+## System Architecture
+
+![image](https://user-images.githubusercontent.com/33615669/200033210-49e50591-9000-45aa-8939-e131c171ae7d.png)
+
+## Page Navigation
+![image](https://user-images.githubusercontent.com/33615669/200033816-35d4d6b8-c30a-4fd9-b799-e69e72011ab6.png)
+
+## Result
