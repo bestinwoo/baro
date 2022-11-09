@@ -2,8 +2,10 @@ package inhatc.capstone.baro.image;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.Duration;
 
 import org.springframework.core.io.Resource;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,12 +36,12 @@ public class ImageController {
 	//TODO: 이미지 크기제한, 배열로 받기
 	@Operation(summary = "이미지 등록")
 	@Parameters({
-		@Parameter(name = "file", description = "이미지 파일(png 또는 jpg 파일로 확장자 제한)", required = true),
-		@Parameter(name = "type", description = "프로젝트 이미지일 경우 project, 회원 이미지일 경우 member", required = true)
+			@Parameter(name = "file", description = "이미지 파일(png 또는 jpg 파일로 확장자 제한)", required = true),
+			@Parameter(name = "type", description = "프로젝트 이미지일 경우 project, 회원 이미지일 경우 member", required = true)
 	})
 	@ApiResponses({
-		@ApiResponse(responseCode = "200", description = "등록 완료", content = @Content(schema = @Schema(defaultValue = "imageName.png"))),
-		@ApiResponse(responseCode = "400", description = "등록 실패", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+			@ApiResponse(responseCode = "200", description = "등록 완료", content = @Content(schema = @Schema(defaultValue = "imageName.png"))),
+			@ApiResponse(responseCode = "400", description = "등록 실패", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
 	})
 	@PostMapping("/image")
 	public ResponseEntity<?> uploadImage(@RequestParam MultipartFile file, @RequestParam String type) {
@@ -56,15 +58,16 @@ public class ImageController {
 
 	@Operation(summary = "이미지 조회")
 	@Parameters({
-		@Parameter(name = "type", description = "프로젝트 이미지일 경우 project, 회원 이미지일 경우 member", required = true),
-		@Parameter(name = "fileName", description = "파일 이름", required = true)
+			@Parameter(name = "type", description = "프로젝트 이미지일 경우 project, 회원 이미지일 경우 member", required = true),
+			@Parameter(name = "fileName", description = "파일 이름", required = true)
 	})
 	@GetMapping("/image/{type}/{fileName}")
 	public ResponseEntity<Resource> getImageByName(@PathVariable String type, @PathVariable String fileName) throws
-		IOException {
+			IOException {
 		Resource resource = imageService.getImageByPath(fileName, type);
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", Files.probeContentType(resource.getFile().toPath()));
-		return ResponseEntity.ok().headers(headers).body(resource);
+		CacheControl cacheControl = CacheControl.maxAge(Duration.ofDays(365));
+		return ResponseEntity.ok().headers(headers).cacheControl(cacheControl).body(resource);
 	}
 }

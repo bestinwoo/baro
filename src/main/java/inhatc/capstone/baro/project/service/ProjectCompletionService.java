@@ -41,8 +41,9 @@ public class ProjectCompletionService {
 	//완성작 조회
 	public ProjectCompletionDto findProjectCompletionById(Long projectId) {
 		ProjectCompletion projectCompletion = projectCompletionRepository.findById(projectId)
-			.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_PROJECT));
+				.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_PROJECT));
 
 		return ProjectCompletionDto.from(projectCompletion);
 	}
+
 }
