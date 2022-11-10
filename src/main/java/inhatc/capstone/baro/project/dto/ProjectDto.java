@@ -11,6 +11,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import inhatc.capstone.baro.lounge.LoungeDto;
 import inhatc.capstone.baro.project.domain.Project;
 import inhatc.capstone.baro.project.domain.ProjectApplicant;
 import inhatc.capstone.baro.project.domain.ProjectDetail;
@@ -114,22 +115,22 @@ public class ProjectDto {
 
 		public static Summary from(Project project) {
 			Summary summary = Summary.builder()
-				.id(project.getId())
-				.title(project.getTitle())
-				.state(project.getState())
-				.leaderId(project.getLeader().getId())
-				.leaderNickname(project.getLeader().getNickname())
-				.likeCount(project.getLikeCount())
-				.viewCount(project.getViewCount())
-				.purpose(project.getPurpose())
-				.imagePath(project.getImage().getImagePath())
-				.build();
+					.id(project.getId())
+					.title(project.getTitle())
+					.state(project.getState())
+					.leaderId(project.getLeader().getId())
+					.leaderNickname(project.getLeader().getNickname())
+					.likeCount(project.getLikeCount())
+					.viewCount(project.getViewCount())
+					.purpose(project.getPurpose())
+					.imagePath(project.getImage().getImagePath())
+					.build();
 
 			List<RecruitJob> jobList = new ArrayList<>();
 			//모집 분야별로 grouping
 			Map<Long, List<ProjectTeam>> collect = project.getTeam()
-				.stream()
-				.collect(Collectors.groupingBy(t -> t.getJob().getId()));
+					.stream()
+					.collect(Collectors.groupingBy(t -> t.getJob().getId()));
 
 			for (Map.Entry<Long, List<ProjectTeam>> entry : collect.entrySet()) {
 				List<ProjectTeam> team = entry.getValue();
@@ -147,11 +148,11 @@ public class ProjectDto {
 				}
 
 				RecruitJob job = RecruitJob.builder()
-					.jobId(entry.getKey())
-					.recruitCount(team.size())
-					.completeCount(team.stream().filter(t -> t.getMember() != null).count())
-					.jobName(team.get(0).getJob().getName())
-					.build();
+						.jobId(entry.getKey())
+						.recruitCount(team.size())
+						.completeCount(team.stream().filter(t -> t.getMember() != null).count())
+						.jobName(team.get(0).getJob().getName())
+						.build();
 
 				jobList.add(job);
 			}
@@ -170,32 +171,38 @@ public class ProjectDto {
 		private String description;
 		private LocalDate startDate;
 		private LocalDate endDate;
-		private Long loungeId;
-		private String ideaProviderName;
+		private LoungeDto.Response ideaDetail;
 		private List<TeamMember> team;
 		private List<TeamMember> applicants;
 		private boolean isLike;
 
 		public static Detail from(ProjectDetail detail) {
 			Detail detailDto = Detail.builder()
-				.summary(Summary.from(detail.getProject()))
-				.skill(detail.getProject().getSkill().stream().map(ProjectSkill::getName).collect(Collectors.toSet()))
-				.description(detail.getContent())
-				.startDate(detail.getStartDate())
-				.endDate(detail.getEndDate())
-				.team(detail.getProject()
-					.getTeam()
-					.stream()
-					.filter(t -> t.getMember() != null)
-					.map(TeamMember::from)
-					.collect(Collectors.toList()))
-				.applicants(
-					detail.getProject().getApplicants().stream().map(TeamMember::from).collect(Collectors.toList()))
-				.build();
+					.summary(Summary.from(detail.getProject()))
+					.skill(detail.getProject()
+							.getSkill()
+							.stream()
+							.map(ProjectSkill::getName)
+							.collect(Collectors.toSet()))
+					.description(detail.getContent())
+					.startDate(detail.getStartDate())
+					.endDate(detail.getEndDate())
+					.team(detail.getProject()
+							.getTeam()
+							.stream()
+							.filter(t -> t.getMember() != null)
+							.map(TeamMember::from)
+							.collect(Collectors.toList()))
+					.applicants(
+							detail.getProject()
+									.getApplicants()
+									.stream()
+									.map(TeamMember::from)
+									.collect(Collectors.toList()))
+					.build();
 
 			if (detail.getLounge() != null) {
-				detailDto.setLoungeId(detail.getLounge().getId());
-				detailDto.setIdeaProviderName(detail.getLounge().getMember().getNickname());
+				detailDto.setIdeaDetail(LoungeDto.Response.from(detail.getLounge()));
 			}
 			return detailDto;
 		}
@@ -215,13 +222,13 @@ public class ProjectDto {
 
 		public static TeamMember from(ProjectTeam team) {
 			TeamMember teamMember = TeamMember.builder()
-				.id(team.getId())
-				.memberId(team.getMember().getId())
-				.nickname(team.getMember().getNickname())
-				.profileJobName(team.getMember().getJob().getName())
-				.projectJobName(team.getJob().getName())
-				.school(team.getMember().getUniversity())
-				.build();
+					.id(team.getId())
+					.memberId(team.getMember().getId())
+					.nickname(team.getMember().getNickname())
+					.profileJobName(team.getMember().getJob().getName())
+					.projectJobName(team.getJob().getName())
+					.school(team.getMember().getUniversity())
+					.build();
 
 			if (team.getMember().getUserProfileImage() != null) {
 				teamMember.userProfileImage = team.getMember().getUserProfileImage().getImagePath();
@@ -232,13 +239,13 @@ public class ProjectDto {
 
 		public static TeamMember from(ProjectApplicant team) {
 			TeamMember teamMember = TeamMember.builder()
-				.id(team.getId())
-				.memberId(team.getApplicant().getId())
-				.nickname(team.getApplicant().getNickname())
-				.profileJobName(team.getApplicant().getJob().getName())
-				.projectJobName(team.getJob().getName())
-				.school(team.getApplicant().getUniversity())
-				.build();
+					.id(team.getId())
+					.memberId(team.getApplicant().getId())
+					.nickname(team.getApplicant().getNickname())
+					.profileJobName(team.getApplicant().getJob().getName())
+					.projectJobName(team.getJob().getName())
+					.school(team.getApplicant().getUniversity())
+					.build();
 
 			if (team.getApplicant().getUserProfileImage() != null) {
 				teamMember.userProfileImage = team.getApplicant().getUserProfileImage().getImagePath();
