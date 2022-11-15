@@ -26,13 +26,13 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 	private final TokenProvider tokenProvider;
-	@Value("${app.oauth2.authorized-redirect-uri}")
+	@Value("${app.oauth2.authorized-redirect-uri-aws}")
 	private String redirectUrl;
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-		Authentication authentication)
-		throws IOException, ServletException {
+			Authentication authentication)
+			throws IOException, ServletException {
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
 		CustomOAuth2User oAuth2User = (CustomOAuth2User)authentication.getPrincipal();
@@ -45,10 +45,10 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 		TokenDto.Response token = tokenProvider.generateTokenDto(createUserPayload(loggedMember));
 		log.info("{}", token);
 		String redirectUri = UriComponentsBuilder.fromUriString(redirectUrl)
-			.queryParam("accessToken", token.getAccessToken())
-			.queryParam("refreshToken", token.getRefreshToken())
-			.queryParam("isFirst", firstMember)
-			.toUriString();
+				.queryParam("accessToken", token.getAccessToken())
+				.queryParam("refreshToken", token.getRefreshToken())
+				.queryParam("isFirst", firstMember)
+				.toUriString();
 
 		response.sendRedirect(redirectUri);
 	}

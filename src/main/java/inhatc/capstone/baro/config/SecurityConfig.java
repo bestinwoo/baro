@@ -2,6 +2,7 @@ package inhatc.capstone.baro.config;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -32,6 +33,8 @@ public class SecurityConfig {
 	private final TokenProvider tokenProvider;
 	private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 	private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+	@Value("${aws.client.uri}")
+	private String clientUri;
 
 	@Bean
 	public WebSecurityCustomizer webSecurity() {
@@ -41,47 +44,56 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
-			.cors().configurationSource(request -> {
-				CorsConfiguration cors = new CorsConfiguration();
-				cors.setAllowedOrigins(List.of("http://localhost:3000"));
-				cors.setAllowedMethods(List.of("PATCH", "GET", "POST", "PUT", "DELETE", "OPTIONS"));
-				cors.setAllowCredentials(true);
-				cors.setAllowedHeaders(List.of("*"));
-				return cors;
-			});
-		http.httpBasic().disable()
-			.csrf().disable()
-			.sessionManagement()
-			.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+				.cors().configurationSource(request -> {
+					CorsConfiguration cors = new CorsConfiguration();
+					cors.setAllowedOrigins(
+							List.of("http://localhost:3000", clientUri));
+					cors.setAllowedMethods(List.of("PATCH", "GET", "POST", "PUT", "DELETE", "OPTIONS"));
+					cors.setAllowCredentials(true);
+					cors.setAllowedHeaders(List.of("*"));
+					return cors;
+				});
+		http.httpBasic()
+				.disable()
+				.csrf()
+				.disable()
+				.sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
-			.and()
-			.exceptionHandling()
-			.authenticationEntryPoint(jwtAuthenticationEntryPoint)
-			.accessDeniedHandler(jwtAccessDeniedHandler)
+				.and()
+				.exceptionHandling()
+				.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+				.accessDeniedHandler(jwtAccessDeniedHandler)
 
-			.and()
-			.headers()
-			.frameOptions()
-			.sameOrigin()
+				.and()
+				.headers()
+				.frameOptions()
+				.sameOrigin()
 
-			.and()
-			.authorizeRequests()
-			.antMatchers(HttpMethod.OPTIONS).permitAll()
-			.antMatchers("/token/**", "/job/**").permitAll()
-			.antMatchers(HttpMethod.GET, "/project/**", "/image/**", "/lounge/**", "/member/**", "/rank/**").permitAll()
-			//	.antMatchers("/member/**").permitAll()
-			.anyRequest().authenticated()
+				.and()
+				.authorizeRequests()
+				.antMatchers(HttpMethod.OPTIONS)
+				.permitAll()
+				.antMatchers("/token/**", "/job/**")
+				.permitAll()
+				.antMatchers(HttpMethod.GET, "/project/**", "/image/**", "/lounge/**", "/member/**", "/rank/**")
+				.permitAll()
+				//	.antMatchers("/member/**").permitAll()
+				.anyRequest()
+				.authenticated()
 
-			.and()
-			.logout().logoutSuccessUrl("/")
+				.and()
+				.logout()
+				.logoutSuccessUrl("/")
 
-			.and()
-			.oauth2Login()
-			.successHandler(successHandler)
-			.userInfoEndpoint().userService(oAuth2UserService);
+				.and()
+				.oauth2Login()
+				.successHandler(successHandler)
+				.userInfoEndpoint()
+				.userService(oAuth2UserService);
 
 		http.addFilterBefore(new JwtAuthFilter(tokenProvider),
-			UsernamePasswordAuthenticationFilter.class);
+				UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
 	}
