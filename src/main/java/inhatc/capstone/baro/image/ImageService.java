@@ -23,7 +23,7 @@ public class ImageService {
 		if (!originName.endsWith(".png") && !originName.endsWith(".jpg")) {
 			throw new CustomException(ErrorCode.INVALID_IMAGE_EXTENSION);
 		}
-		String absolutePath = new File("").getAbsolutePath() + "\\";
+		String absolutePath = new File("").getAbsolutePath() + File.separator;
 		String path = "src/main/resources/images/" + type + "/";
 		File file = new File(path);
 		if (!file.exists()) {
@@ -41,14 +41,14 @@ public class ImageService {
 	}
 
 	public Resource getImageByPath(String fileName, String type) {
-		String absolutePath = new File("").getAbsolutePath() + "\\";
+		String absolutePath = new File("").getAbsolutePath() + File.separator;
 		String path = absolutePath + "src/main/resources/images/" + type + "/" + fileName;
 		Resource resource = new FileSystemResource(path);
 
 		if (!resource.exists()) {
 			throw new CustomException(ErrorCode.NOT_FOUND_IMAGE);
 		}
-		
+
 		return resource;
 	}
 
