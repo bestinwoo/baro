@@ -35,7 +35,7 @@ public class Project {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private String purpose; // 프로젝트 목적
+	private String purpose;
 	private String title;
 	private Long viewCount;
 	private Long likeCount;
@@ -50,6 +50,12 @@ public class Project {
 	private List<ProjectSkill> skill;
 	private String state;
 	private LocalDateTime createDate;
+
+	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<ProjectTeam> team;
+
+	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+	private List<ProjectApplicant> applicants;
 
 	public void setSkill(List<ProjectSkill> skill) {
 		this.skill = skill;
@@ -75,12 +81,6 @@ public class Project {
 		this.state = state;
 	}
 
-	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<ProjectTeam> team;
-
-	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
-	private List<ProjectApplicant> applicants;
-
 	/**
 	 * 새 프로젝트 생성
 	 * @param create
@@ -88,22 +88,18 @@ public class Project {
 	 */
 	public static Project createProject(ProjectDto.Create create) {
 		Project project = Project.builder()
-			.title(create.getTitle())
-			.viewCount(0L)
-			.likeCount(0L)
-			.purpose(create.getPurpose())
-			.createDate(LocalDateTime.now())
-			.state("R")
-			.leader(Member.builder().id(create.getLeaderId()).build())
-			.image(Image.builder().imagePath(create.getThumbnailLink()).build())
-			.build();
-
-		// ProjectDetail detail = ProjectDetail.from(create);
-		// detail.setProject(project);
-		// project.setDetail(detail);
+				.title(create.getTitle())
+				.viewCount(0L)
+				.likeCount(0L)
+				.purpose(create.getPurpose())
+				.createDate(LocalDateTime.now())
+				.state("R")
+				.leader(Member.builder().id(create.getLeaderId()).build())
+				.image(Image.builder().imagePath(create.getThumbnailLink()).build())
+				.build();
 
 		List<ProjectSkill> skills = create.getSkillIds().stream().map(m ->
-			ProjectSkill.builder().name(m).project(project).build()
+				ProjectSkill.builder().name(m).project(project).build()
 		).collect(Collectors.toList());
 
 		project.setSkill(skills);

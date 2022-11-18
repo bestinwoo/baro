@@ -19,6 +19,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import inhatc.capstone.baro.member.domain.QMember;
 import inhatc.capstone.baro.project.domain.Project;
 import inhatc.capstone.baro.project.domain.QProject;
+import inhatc.capstone.baro.project.domain.QProjectSkill;
 import inhatc.capstone.baro.project.dto.ProjectDto;
 import lombok.RequiredArgsConstructor;
 
@@ -29,47 +30,41 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
 	@Override
 	public Page<Project> findByCondition(ProjectDto.Request request, Pageable pageable) {
-		List<Project> fetch = queryFactory.select(project)
-			.from(project)
-			.distinct()
-			.innerJoin(project.leader, QMember.member)
-			.leftJoin(project.team, projectTeam)
-			.fetchJoin()
-			.where(
-				projectTeam.project.id.eq(project.id),
-				likeSchool(request.getSchool()),
-				eqPurpose(request.getPurpose()),
-				eqJob(request.getJobId()),
-				eqState(request.getState())
-			)
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize())
-			.fetch();
+		List<Project> projectList = queryFactory
+				.selectFrom(project)
+				.distinct()
+				.innerJoin(project.leader, QMember.member)
+				.leftJoin(project.team, projectTeam)
+				.leftJoin(project.skill, QProjectSkill.projectSkill)
+				.where(
+						likeSchool(request.getSchool()),
+						eqPurpose(request.getPurpose()),
+						eqJob(request.getJobId()),
+						eqState(request.getState())
+				)
+				.offset(pageable.getOffset())
+				.limit(pageable.getPageSize())
+				.fetch();
 
-		JPAQuery<Project> countQuery = queryFactory
-			.select(project)
-			.from(project)
-			.distinct()
-			.innerJoin(project.leader, QMember.member)
-			.leftJoin(project.team, projectTeam)
-			.where(
-				projectTeam.project.id.eq(project.id),
-				likeSchool(request.getSchool()),
-				eqPurpose(request.getPurpose()),
-				eqJob(request.getJobId()),
-				eqState(request.getState())
-			);
+		JPAQuery<Long> countQuery = queryFactory
+				.select(project.countDistinct())
+				.from(project)
+				.where(
+						likeSchool(request.getSchool()),
+						eqPurpose(request.getPurpose()),
+						eqJob(request.getJobId()),
+						eqState(request.getState())
+				);
 
-		return PageableExecutionUtils.getPage(fetch, pageable, () -> countQuery.fetch().size());
-		//return new PageImpl<>(fetch.getResults(), pageable, fetch.getTotal());
+		return PageableExecutionUtils.getPage(projectList, pageable, countQuery::fetchOne);
 	}
 
 	@Override
 	public List<Project> findByMemberId(Long memberId) {
 		List<Project> project = queryFactory.selectFrom(QProject.project)
-			.innerJoin(QProject.project.team, projectTeam)
-			.where(eqTeamMemberId(memberId))
-			.fetch();
+				.innerJoin(QProject.project.team, projectTeam)
+				.where(eqTeamMemberId(memberId))
+				.fetch();
 		return project;
 	}
 

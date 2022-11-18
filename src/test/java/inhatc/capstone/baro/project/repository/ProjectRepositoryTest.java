@@ -42,25 +42,25 @@ class ProjectRepositoryTest {
 	public void createProject() {
 		for (int i = 0; i < 2; i++) {
 			Member member = Member.builder()
-				.email("Test@gmail.com")
-				.isFirst(false)
-				.oauth2Id("0124495" + i)
-				.nickname("Test")
-				.university("인하공업전문대학")
-				.build();
+					.email("Test@gmail.com")
+					.isFirst(false)
+					.oauth2Id("0124495" + i)
+					.nickname("Test")
+					.university("인하공업전문대학")
+					.build();
 
 			memberRepository.save(member);
 
 			Project project = Project.builder()
-				.likeCount(0L)
-				.title("Test" + i)
-				.viewCount(0L)
-				.leader(member)
-				.build();
+					.likeCount(0L)
+					.title("Test" + i)
+					.viewCount(0L)
+					.leader(member)
+					.build();
 
 			ProjectDetail detail = ProjectDetail.builder()
-				.content("Test Content" + i)
-				.build();
+					.content("Test Content" + i)
+					.build();
 			detail.setProject(project);
 			projectDetailRepository.save(detail);
 			//project.setDetail(detail);
@@ -93,10 +93,10 @@ class ProjectRepositoryTest {
 	@DisplayName("Detail Querydsl 테스트")
 	public void detailQuerydslTest() {
 		List<ProjectDetail> fetch = factory.select(projectDetail)
-			.from(projectDetail)
-			.innerJoin(projectDetail.project, QProject.project)
-			.fetchJoin()
-			.fetch();
+				.from(projectDetail)
+				.innerJoin(projectDetail.project, QProject.project)
+				.fetchJoin()
+				.fetch();
 
 		ProjectDetail detail = fetch.get(0);
 		System.out.println(detail.getContent());
@@ -108,57 +108,41 @@ class ProjectRepositoryTest {
 	@DisplayName("페이징 쿼리 테스트")
 	public void pageQueryTest() {
 		List<Tuple> fetch = factory.select(
-				project.title,
-				project.leader,
-				project.team,
-				project.id,
-				project.purpose,
-				project.state,
-				project.image,
-				project.likeCount,
-				project.viewCount
-			)
-			.from(project)
-			.distinct()
-			// .innerJoin(project.leader, QMember.member)
-			// .leftJoin(project.team, projectTeam)
-			// .fetchJoin()
-			.where(
-				//	projectTeam.project.id.eq(project.id),
-				likeSchool("인하공업전문대"),
-				eqPurpose("사이드 프로젝트"),
-				eqJob(12L)
-			)
-			.offset(1)
-			.limit(5)
-			.fetch();
+						project.title,
+						project.leader,
+						project.team,
+						project.id,
+						project.purpose,
+						project.state,
+						project.image,
+						project.likeCount,
+						project.viewCount
+				)
+				.from(project)
+				.distinct()
+				// .innerJoin(project.leader, QMember.member)
+				// .leftJoin(project.team, projectTeam)
+				// .fetchJoin()
+				.where(
+						//	projectTeam.project.id.eq(project.id),
+						likeSchool("인하공업전문대"),
+						eqPurpose("사이드 프로젝트"),
+						eqJob(12L)
+				)
+				.offset(1)
+				.limit(5)
+				.fetch();
 		System.out.println(fetch);
-		//System.out.println(fetch.get(0).getTeam().get(0).getJob().getName());
-
-		// JPAQuery<Project> countQuery = factory
-		// 	.select(project)
-		// 	.from(project)
-		// 	.distinct()
-		// 	.innerJoin(project.leader, QMember.member)
-		// 	.leftJoin(project.team, projectTeam)
-		// 	.where(
-		// 		projectTeam.project.id.eq(project.id),
-		// 		likeSchool("인하공업전문대"),
-		// 		eqPurpose("사이드 프로젝트"),
-		// 		eqJob(12L)
-		// 	);
-
-		//	System.out.println(countQuery.fetch());
 	}
 
 	@Test
 	@DisplayName("프로젝트 상세 조회 테스트")
 	public void projectDetailTest() {
 		Optional<ProjectDetail> detail = Optional.ofNullable(factory.selectFrom(projectDetail)
-			.innerJoin(projectDetail.project.leader, QMember.member)
-			.fetchJoin()
-			.where(projectDetail.id.eq(33L))
-			.fetchOne());
+				.innerJoin(projectDetail.project.leader, QMember.member)
+				.fetchJoin()
+				.where(projectDetail.id.eq(33L))
+				.fetchOne());
 		ProjectDto.Detail detailDto = ProjectDto.Detail.from(detail.get());
 		System.out.println(detailDto.getDescription());
 		System.out.println(detailDto.getSkill());
@@ -169,9 +153,9 @@ class ProjectRepositoryTest {
 	@DisplayName("프로젝트 현황 조회 테스트")
 	public void projectStatusTest() {
 		List<Project> fetch = factory.selectFrom(project)
-			.innerJoin(project.team, projectTeam)
-			.where(projectTeam.member.id.eq(1L))
-			.fetch();
+				.innerJoin(project.team, projectTeam)
+				.where(projectTeam.member.id.eq(1L))
+				.fetch();
 
 		for (Project fetch1 : fetch) {
 			ProjectDto.Summary from = ProjectDto.Summary.from(fetch1);
