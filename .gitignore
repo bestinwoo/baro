@@ -18,6 +18,7 @@ bin/
 !**/src/test/**/bin/
 ### application-properties ###
 **/resources/application-secret.properties
+**/resources/application-release.properties
 **/resources/images/**
 
 ### IntelliJ IDEA ###
