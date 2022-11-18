@@ -2,6 +2,7 @@ package inhatc.capstone.baro.project;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +25,7 @@ public class ProjectCompletionController {
 
 	@Operation(summary = "완성작 등록")
 	@PostMapping
-	public ResponseEntity<?> writeProjectCompletion(@RequestBody ProjectCompletionDto write) {
+	public ResponseEntity<?> writeProjectCompletion(@Validated @RequestBody ProjectCompletionDto write) {
 		completionService.projectComplete(write);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
