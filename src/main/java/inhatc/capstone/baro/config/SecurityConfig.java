@@ -47,7 +47,7 @@ public class SecurityConfig {
 				.cors().configurationSource(request -> {
 					CorsConfiguration cors = new CorsConfiguration();
 					cors.setAllowedOrigins(
-							List.of("http://localhost:3000", clientUri));
+							List.of("http://localhost:3000", clientUri, "http://baroidea.net"));
 					cors.setAllowedMethods(List.of("PATCH", "GET", "POST", "PUT", "DELETE", "OPTIONS"));
 					cors.setAllowCredentials(true);
 					cors.setAllowedHeaders(List.of("*"));
