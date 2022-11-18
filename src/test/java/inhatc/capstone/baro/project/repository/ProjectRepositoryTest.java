@@ -6,7 +6,6 @@ import static inhatc.capstone.baro.project.domain.QProjectTeam.*;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,13 +14,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import inhatc.capstone.baro.member.MemberRepository;
 import inhatc.capstone.baro.member.domain.Member;
-import inhatc.capstone.baro.member.domain.QMember;
 import inhatc.capstone.baro.project.domain.Project;
 import inhatc.capstone.baro.project.domain.ProjectDetail;
 import inhatc.capstone.baro.project.domain.QProject;
@@ -83,6 +80,7 @@ class ProjectRepositoryTest {
 	@Test
 	@DisplayName("Detail Repository 테스트")
 	public void detailRepoTest() {
+		createProject();
 		List<ProjectDetail> all = projectDetailRepository.findAll();
 		ProjectDetail detail = all.get(0);
 		System.out.println(detail.getContent());
@@ -92,6 +90,7 @@ class ProjectRepositoryTest {
 	@Test
 	@DisplayName("Detail Querydsl 테스트")
 	public void detailQuerydslTest() {
+		createProject();
 		List<ProjectDetail> fetch = factory.select(projectDetail)
 				.from(projectDetail)
 				.innerJoin(projectDetail.project, QProject.project)
@@ -104,50 +103,19 @@ class ProjectRepositoryTest {
 
 	}
 
-	@Test
-	@DisplayName("페이징 쿼리 테스트")
-	public void pageQueryTest() {
-		List<Tuple> fetch = factory.select(
-						project.title,
-						project.leader,
-						project.team,
-						project.id,
-						project.purpose,
-						project.state,
-						project.image,
-						project.likeCount,
-						project.viewCount
-				)
-				.from(project)
-				.distinct()
-				// .innerJoin(project.leader, QMember.member)
-				// .leftJoin(project.team, projectTeam)
-				// .fetchJoin()
-				.where(
-						//	projectTeam.project.id.eq(project.id),
-						likeSchool("인하공업전문대"),
-						eqPurpose("사이드 프로젝트"),
-						eqJob(12L)
-				)
-				.offset(1)
-				.limit(5)
-				.fetch();
-		System.out.println(fetch);
-	}
-
-	@Test
-	@DisplayName("프로젝트 상세 조회 테스트")
-	public void projectDetailTest() {
-		Optional<ProjectDetail> detail = Optional.ofNullable(factory.selectFrom(projectDetail)
-				.innerJoin(projectDetail.project.leader, QMember.member)
-				.fetchJoin()
-				.where(projectDetail.id.eq(33L))
-				.fetchOne());
-		ProjectDto.Detail detailDto = ProjectDto.Detail.from(detail.get());
-		System.out.println(detailDto.getDescription());
-		System.out.println(detailDto.getSkill());
-		System.out.println(detail.get().getProject());
-	}
+	// @Test
+	// @DisplayName("프로젝트 상세 조회 테스트")
+	// public void projectDetailTest() {
+	// 	createProject();
+	// 	Optional<ProjectDetail> detail = Optional.ofNullable(factory.selectFrom(projectDetail)
+	// 			.innerJoin(projectDetail.project.leader, QMember.member)
+	// 			.fetchJoin()
+	// 			.fetchOne());
+	// 	ProjectDto.Detail detailDto = ProjectDto.Detail.from(detail.get());
+	// 	System.out.println(detailDto.getDescription());
+	// 	System.out.println(detailDto.getSkill());
+	// 	System.out.println(detail.get().getProject());
+	// }
 
 	@Test
 	@DisplayName("프로젝트 현황 조회 테스트")
