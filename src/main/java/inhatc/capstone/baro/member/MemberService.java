@@ -18,6 +18,7 @@ import inhatc.capstone.baro.jwt.SecurityUtil;
 import inhatc.capstone.baro.member.domain.Member;
 import inhatc.capstone.baro.member.dto.MemberDto;
 import inhatc.capstone.baro.project.dto.ProjectDto;
+import inhatc.capstone.baro.project.mapper.ProjectMapper;
 import inhatc.capstone.baro.project.repository.ProjectApplicantRepository;
 import inhatc.capstone.baro.project.repository.ProjectRepository;
 import inhatc.capstone.baro.ranking.School;
@@ -44,7 +45,7 @@ public class MemberService {
 		if (!member.isFirst()) { // 이미 가입된 유저일경우 exception throw
 			throw new CustomException(EXIST_MEMBER);
 		}
-		
+
 		if (!schoolRepository.existsByName(register.getUniversity())) {
 			schoolRepository.save(School.builder().name(register.getUniversity()).point(0L).build());
 		}
@@ -59,7 +60,7 @@ public class MemberService {
 	@Transactional(readOnly = true)
 	public MemberDto.Info getMemberInfo(Long memberId) {
 		Member member = memberRepository.findByIdAndIsFirstIsFalse(memberId)
-			.orElseThrow(() -> new CustomException(NOT_FOUND_MEMBER));
+				.orElseThrow(() -> new CustomException(NOT_FOUND_MEMBER));
 
 		return MemberDto.Info.from(member);
 	}
@@ -97,27 +98,27 @@ public class MemberService {
 	public ProjectDto.MyPage getMyProject(Long memberId) {
 		ProjectDto.MyPage myProject = new ProjectDto.MyPage();
 		List<ProjectDto.Summary> apply = applicantRepository.findByApplicantId(memberId)
-			.stream()
-			.map(ap -> ProjectDto.Summary.from(ap.getProject()))
-			.collect(
-				Collectors.toList());
+				.stream()
+				.map(ap -> ProjectMapper.INSTANCE.toSummary(ap.getProject()))
+				.collect(
+						Collectors.toList());
 		myProject.setApply(apply);
 
 		List<ProjectDto.Summary> memberProject = projectRepository.findByMemberId(memberId)
-			.stream()
-			.map(ProjectDto.Summary::from)
-			.collect(Collectors.toList());
+				.stream()
+				.map(ProjectMapper.INSTANCE::toSummary)
+				.collect(Collectors.toList());
 
 		myProject.setProgress(
-			memberProject.stream()
-				.filter(p -> !p.getState().equals("E"))
-				.collect(Collectors.toList())
+				memberProject.stream()
+						.filter(p -> !p.getState().equals("E"))
+						.collect(Collectors.toList())
 		);
 
 		myProject.setComplete(
-			memberProject.stream()
-				.filter(p -> p.getState().equals("E"))
-				.collect(Collectors.toList())
+				memberProject.stream()
+						.filter(p -> p.getState().equals("E"))
+						.collect(Collectors.toList())
 		);
 
 		return myProject;

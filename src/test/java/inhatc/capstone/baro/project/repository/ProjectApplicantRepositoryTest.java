@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import inhatc.capstone.baro.project.domain.ProjectApplicant;
 import inhatc.capstone.baro.project.dto.ProjectDto;
+import inhatc.capstone.baro.project.mapper.ProjectMapper;
 
 @SpringBootTest
 @Transactional
@@ -21,7 +22,7 @@ class ProjectApplicantRepositoryTest {
 		List<ProjectApplicant> applicants = applicantRepository.findByApplicantId(1L);
 
 		for (ProjectApplicant applicant : applicants) {
-			ProjectDto.Summary from = ProjectDto.Summary.from(applicant.getProject());
+			ProjectDto.Summary from = ProjectMapper.INSTANCE.toSummary(applicant.getProject());
 			System.out.println(from.getTitle());
 		}
 	}

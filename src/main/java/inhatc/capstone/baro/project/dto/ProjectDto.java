@@ -1,9 +1,7 @@
 package inhatc.capstone.baro.project.dto;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -14,9 +12,8 @@ import javax.validation.constraints.Size;
 import inhatc.capstone.baro.lounge.LoungeDto;
 import inhatc.capstone.baro.project.domain.Project;
 import inhatc.capstone.baro.project.domain.ProjectApplicant;
-import inhatc.capstone.baro.project.domain.ProjectDetail;
-import inhatc.capstone.baro.project.domain.ProjectSkill;
 import inhatc.capstone.baro.project.domain.ProjectTeam;
+import inhatc.capstone.baro.project.mapper.ProjectMapper;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -112,54 +109,6 @@ public class ProjectDto {
 		@Schema(description = "프로젝트 목적", defaultValue = "사이드 프로젝트")
 		private String purpose;
 		private String imagePath;
-
-		public static Summary from(Project project) {
-			Summary summary = Summary.builder()
-					.id(project.getId())
-					.title(project.getTitle())
-					.state(project.getState())
-					.leaderId(project.getLeader().getId())
-					.leaderNickname(project.getLeader().getNickname())
-					.likeCount(project.getLikeCount())
-					.viewCount(project.getViewCount())
-					.purpose(project.getPurpose())
-					.imagePath(project.getImage().getImagePath())
-					.build();
-
-			List<RecruitJob> jobList = new ArrayList<>();
-			//모집 분야별로 grouping
-			Map<Long, List<ProjectTeam>> collect = project.getTeam()
-					.stream()
-					.collect(Collectors.groupingBy(t -> t.getJob().getId()));
-
-			for (Map.Entry<Long, List<ProjectTeam>> entry : collect.entrySet()) {
-				List<ProjectTeam> team = entry.getValue();
-
-				//리더는 모집 인원에서 제외하도록 filter 처리
-				team = team.stream().filter(t -> {
-					if (t.getMember() != null) {
-						return !t.getMember().getId().equals(project.getLeader().getId());
-					} else {
-						return true;
-					}
-				}).collect(Collectors.toList());
-				if (team.size() < 1) {
-					continue;
-				}
-
-				RecruitJob job = RecruitJob.builder()
-						.jobId(entry.getKey())
-						.recruitCount(team.size())
-						.completeCount(team.stream().filter(t -> t.getMember() != null).count())
-						.jobName(team.get(0).getJob().getName())
-						.build();
-
-				jobList.add(job);
-			}
-			summary.setJobs(jobList);
-
-			return summary;
-		}
 	}
 
 	@Getter
@@ -175,37 +124,6 @@ public class ProjectDto {
 		private List<TeamMember> team;
 		private List<TeamMember> applicants;
 		private boolean isLike;
-
-		public static Detail from(ProjectDetail detail) {
-			Detail detailDto = Detail.builder()
-					.summary(Summary.from(detail.getProject()))
-					.skill(detail.getProject()
-							.getSkill()
-							.stream()
-							.map(ProjectSkill::getName)
-							.collect(Collectors.toSet()))
-					.description(detail.getContent())
-					.startDate(detail.getStartDate())
-					.endDate(detail.getEndDate())
-					.team(detail.getProject()
-							.getTeam()
-							.stream()
-							.filter(t -> t.getMember() != null)
-							.map(TeamMember::from)
-							.collect(Collectors.toList()))
-					.applicants(
-							detail.getProject()
-									.getApplicants()
-									.stream()
-									.map(TeamMember::from)
-									.collect(Collectors.toList()))
-					.build();
-
-			if (detail.getLounge() != null) {
-				detailDto.setIdeaDetail(LoungeDto.Response.from(detail.getLounge()));
-			}
-			return detailDto;
-		}
 	}
 
 	@Getter
@@ -285,7 +203,7 @@ public class ProjectDto {
 
 		public static MyPage from(List<Project> project) {
 			MyPage myPage = new MyPage();
-			List<Summary> list = project.stream().map(Summary::from).collect(Collectors.toList());
+			List<Summary> list = project.stream().map(ProjectMapper.INSTANCE::toSummary).collect(Collectors.toList());
 
 			myPage.apply = list.stream().filter(s -> s.getState().equals("R")).collect(Collectors.toList());
 			myPage.progress = list.stream().filter(s -> s.getState().equals("C")).collect(Collectors.toList());

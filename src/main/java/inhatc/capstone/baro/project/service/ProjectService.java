@@ -28,6 +28,7 @@ import inhatc.capstone.baro.project.dto.PointType;
 import inhatc.capstone.baro.project.dto.ProjectDto;
 import inhatc.capstone.baro.project.dto.ProjectDto.Request;
 import inhatc.capstone.baro.project.dto.ProjectDto.Summary;
+import inhatc.capstone.baro.project.mapper.ProjectMapper;
 import inhatc.capstone.baro.project.repository.ProjectApplicantRepository;
 import inhatc.capstone.baro.project.repository.ProjectDetailRepository;
 import inhatc.capstone.baro.project.repository.ProjectRepository;
@@ -52,9 +53,9 @@ public class ProjectService {
 	public void createProject(ProjectDto.Create request) {
 		//이미지를 먼저 서버에 업로드해야 이미지 첨부 가능
 		imageRepository.findById(request.getThumbnailLink())
-			.orElseThrow(() -> new CustomException(NOT_FOUND_IMAGE));
+				.orElseThrow(() -> new CustomException(NOT_FOUND_IMAGE));
 		Member leader = memberRepository.findById(request.getLeaderId())
-			.orElseThrow(() -> new CustomException(NOT_FOUND_MEMBER));
+				.orElseThrow(() -> new CustomException(NOT_FOUND_MEMBER));
 
 		Project project = Project.createProject(request);
 		if (leader.isFirst()) { // 가입하지 않은 회원 프로젝트 생성 불가
@@ -82,32 +83,33 @@ public class ProjectService {
 	//프로젝트 목록 조회
 	@Transactional(readOnly = true)
 	public Page<Summary> getProjectList(Pageable pageable, Request request) {
-		return projectRepository.findByCondition(request, pageable).map(Summary::from);
+		return projectRepository.findByCondition(request, pageable).map(ProjectMapper.INSTANCE::toSummary);
 	}
 
 	//최근 프로젝트 조회
 	@Transactional(readOnly = true)
 	public List<Summary> getRecentProject(int size) {
-		return projectRepository.findAllByOrderByCreateDateDesc(PageRequest.of(0, size)).map(Summary::from)
-			.getContent();
+		return projectRepository.findAllByOrderByCreateDateDesc(PageRequest.of(0, size))
+				.map(ProjectMapper.INSTANCE::toSummary)
+				.getContent();
 	}
 
 	//주목할만한 프로젝트 조회
 	@Transactional(readOnly = true)
 	public List<Summary> getPopularProject() {
 		return projectRepository.findTop3ByOrderByViewCountDesc()
-			.stream()
-			.map(Summary::from)
-			.collect(Collectors.toList());
+				.stream()
+				.map(ProjectMapper.INSTANCE::toSummary)
+				.collect(Collectors.toList());
 	}
 
 	//프로젝트 상세 조회
 	public ProjectDto.Detail getProjectDetail(Long id, Long memberId) {
 		ProjectDetail detail = projectDetailRepository.findById(id)
-			.orElseThrow(() -> new CustomException(NOT_FOUND_PROJECT));
+				.orElseThrow(() -> new CustomException(NOT_FOUND_PROJECT));
 		detail.getProject().increaseViewCount();
 
-		ProjectDto.Detail response = ProjectDto.Detail.from(detail);
+		ProjectDto.Detail response = ProjectMapper.INSTANCE.toDetail(detail);
 		response.setLike(likesRepository.existsByMemberIdAndProjectId(memberId, id));
 		return response;
 	}
@@ -130,10 +132,10 @@ public class ProjectService {
 			throw new CustomException(EXIST_PROJECT_APPLICANT);
 		}
 		ProjectApplicant applicant = ProjectApplicant.builder()
-			.job(Job.builder().id(apply.getJobId()).build())
-			.project(Project.builder().id(apply.getProjectId()).build())
-			.applicant(Member.builder().id(memberId).build())
-			.build();
+				.job(Job.builder().id(apply.getJobId()).build())
+				.project(Project.builder().id(apply.getProjectId()).build())
+				.applicant(Member.builder().id(memberId).build())
+				.build();
 
 		projectApplicantRepository.save(applicant);
 	}
@@ -141,7 +143,7 @@ public class ProjectService {
 	//프로젝트 지원 취소
 	public void deleteApplicant(Long projectId, Long memberId) {
 		ProjectApplicant applicant = projectApplicantRepository.findByProjectIdAndApplicantId(projectId, memberId)
-			.orElseThrow(() -> new CustomException(INVALID_ID));
+				.orElseThrow(() -> new CustomException(INVALID_ID));
 
 		projectApplicantRepository.delete(applicant);
 	}
@@ -149,12 +151,12 @@ public class ProjectService {
 	//지원자 수락
 	public void acceptApplicant(Long applicantId) {
 		ProjectApplicant applicant = projectApplicantRepository.findById(applicantId)
-			.orElseThrow(() -> new CustomException(INVALID_APPLICANT_ID));
+				.orElseThrow(() -> new CustomException(INVALID_APPLICANT_ID));
 
 		//지원 직무에 자리가 있는지 확인
 		ProjectTeam projectTeam = projectTeamRepository.findTopByProjectIdAndJobIdAndMemberIdIsNull(
-			applicant.getProject().getId(),
-			applicant.getJob().getId()).orElseThrow(() -> new CustomException(EXIST_PROJECT_APPLICANT));
+				applicant.getProject().getId(),
+				applicant.getJob().getId()).orElseThrow(() -> new CustomException(EXIST_PROJECT_APPLICANT));
 
 		projectTeam.joinTeam(applicant.getApplicant());
 		applicant.getApplicant().addPoint(PointType.JOIN_PROJECT);
@@ -168,7 +170,7 @@ public class ProjectService {
 	//지원자 거절
 	public void rejectApply(Long applicantId) {
 		ProjectApplicant applicant = projectApplicantRepository.findById(applicantId)
-			.orElseThrow(() -> new CustomException(INVALID_APPLICANT_ID));
+				.orElseThrow(() -> new CustomException(INVALID_APPLICANT_ID));
 
 		Long currentMemberId = SecurityUtil.getCurrentMemberId();
 
@@ -182,12 +184,12 @@ public class ProjectService {
 	//프로젝트 상태 변경(완료)
 	public Project changeStateCompletion(Long projectId) {
 		Project project = projectRepository.findById(projectId)
-			.orElseThrow(() -> new CustomException(NOT_FOUND_PROJECT));
+				.orElseThrow(() -> new CustomException(NOT_FOUND_PROJECT));
 
 		if (!project.getState().equals("C")) {
 			throw new CustomException(NOT_CONTINUE_PROJECT);
 		}
-		
+
 		project.changeProjectState("E");
 		return project;
 	}

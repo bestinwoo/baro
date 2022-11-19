@@ -22,7 +22,7 @@ import inhatc.capstone.baro.member.domain.Member;
 import inhatc.capstone.baro.project.domain.Project;
 import inhatc.capstone.baro.project.domain.ProjectDetail;
 import inhatc.capstone.baro.project.domain.QProject;
-import inhatc.capstone.baro.project.dto.ProjectDto;
+import inhatc.capstone.baro.project.mapper.ProjectMapper;
 
 @SpringBootTest
 @Transactional
@@ -63,7 +63,6 @@ class ProjectRepositoryTest {
 			//project.setDetail(detail);
 			projectRepository.save(project);
 		}
-
 	}
 
 	@Test
@@ -124,11 +123,7 @@ class ProjectRepositoryTest {
 				.innerJoin(project.team, projectTeam)
 				.where(projectTeam.member.id.eq(1L))
 				.fetch();
-
-		for (Project fetch1 : fetch) {
-			ProjectDto.Summary from = ProjectDto.Summary.from(fetch1);
-			System.out.println(from.getLeaderNickname());
-		}
+		fetch.stream().map(ProjectMapper.INSTANCE::toSummary).forEach(System.out::println);
 	}
 
 	private BooleanExpression likeSchool(String school) {
