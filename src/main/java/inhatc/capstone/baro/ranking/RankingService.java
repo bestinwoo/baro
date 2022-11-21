@@ -18,7 +18,7 @@ public class RankingService {
 
 	//개인 랭킹
 	public Page<PersonalRankingDto> getPersonalRanking(Pageable pageable) {
-		return memberRepository.findAllByOrderByPointDesc(pageable);
+		return memberRepository.findAllByIsFirstIsFalseOrderByPointDesc(pageable);
 	}
 
 	//학교 랭킹

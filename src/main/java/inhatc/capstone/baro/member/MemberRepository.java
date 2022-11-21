@@ -43,14 +43,14 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 	 * @param pageable
 	 * @return 랭킹순으로 멤버 정렬하여 반환
 	 */
-	Page<PersonalRankingDto> findAllByOrderByPointDesc(Pageable pageable);
+	Page<PersonalRankingDto> findAllByIsFirstIsFalseOrderByPointDesc(Pageable pageable);
 
 	@Query(value =
-		"select m.university as university, sum(m.point) as point, count(m.university) as personnel "
-			+ "from Member m "
-			+ "where m.isFirst = false "
-			+ "group by m.university "
-			+ "order by point desc")
+			"select m.university as university, sum(m.point) as point, count(m.university) as personnel "
+					+ "from Member m "
+					+ "where m.isFirst = false "
+					+ "group by m.university "
+					+ "order by point desc")
 	Page<SchoolRankingDto> findGroupByUniversityOrderByPointDesc(Pageable pageable);
 
 }
