@@ -35,6 +35,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 				.distinct()
 				.innerJoin(project.leader, QMember.member)
 				.leftJoin(project.team, projectTeam)
+
 				.leftJoin(project.skill, QProjectSkill.projectSkill)
 				.where(
 						likeSchool(request.getSchool()),
@@ -49,6 +50,7 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 		JPAQuery<Long> countQuery = queryFactory
 				.select(project.countDistinct())
 				.from(project)
+				.leftJoin(project.team, projectTeam)
 				.where(
 						likeSchool(request.getSchool()),
 						eqPurpose(request.getPurpose()),
@@ -61,11 +63,10 @@ public class ProjectRepositoryImpl implements ProjectRepositoryCustom {
 
 	@Override
 	public List<Project> findByMemberId(Long memberId) {
-		List<Project> project = queryFactory.selectFrom(QProject.project)
+		return queryFactory.selectFrom(QProject.project)
 				.innerJoin(QProject.project.team, projectTeam)
 				.where(eqTeamMemberId(memberId))
 				.fetch();
-		return project;
 	}
 
 	private BooleanExpression likeSchool(String school) {
