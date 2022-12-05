@@ -3,6 +3,8 @@
 
 **Project execution period** : 2022.09.19 ~ 2022.11 (진행중)
 
+**Web 바로가기** : [Baro](http://baroidea.net/)
+
 
 ## Description
 대학생들이 학교 팀 프로젝트 또는 사이드 프로젝트를 진행할 때 주제를 선정하는 것과 프로젝트 팀원을 구하는 일에 어려움을 겪고 있습니다.
