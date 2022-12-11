@@ -1,7 +1,7 @@
 # 대학생을 위한 프로젝트 팀빌딩 및 아이디어 공유 서비스
 **project Name**: 바로 (Baro)
 
-**Project execution period** : 2022.09.19 ~ 2022.11 (진행중)
+**Project execution period** : 2022.09.19 ~ 2022.11.29 
 
 **Web 바로가기** : [Baro](http://baroidea.net/)
 
